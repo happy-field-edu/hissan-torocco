@@ -949,6 +949,19 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft')  choose('left');
   if (e.key === 'ArrowRight') choose('right');
 });
+
+/* 確認用ショートカット：URLの末尾に #boss を付けると
+   最終ステージ（ラスボス P.O.C. OVERLORD）からスタートする */
+function jumpToBossIfRequested() {
+  if (location.hash === '#boss') {
+    startGame();
+    stage = TOTAL_STAGES;
+    score = TOTAL_STAGES - 1;
+    nextProblem();
+  }
+}
+window.addEventListener('hashchange', jumpToBossIfRequested);
+jumpToBossIfRequested();
 </script>
 </body>
 </html>
