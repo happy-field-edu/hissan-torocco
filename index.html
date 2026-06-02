@@ -46,43 +46,65 @@ html, body {
 .screen.active { display: flex; }
 
 /* ===========================================================
-   タイトル画面
+   タイトル画面（表紙）／クリア画面：渓谷＋コックピットの共通シーン
    =========================================================== */
-#titleScreen {
-  background: linear-gradient(180deg, #122a52 0%, #1c4a8a 60%, #2d6cc0 100%);
-  text-align: center;
-  color: #fff;
-  z-index: 30;
+/* 渓谷の空（プレイ画面と同じ冒険感） */
+.scene#titleScreen,
+.scene#clearScreen {
+  background: linear-gradient(180deg,
+    #8fd0ee 0%, #a9dbf0 28%, #d6eef2 45%,
+    #c9a468 47%, #8a5e34 75%, #5e3d22 100%);
+  overflow: hidden;
+}
+#titleScreen { text-align: center; color: #fff; z-index: 30; }
+
+/* 画面中央にのせる文字・ボタンのまとまり（コックピットより手前） */
+.title-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8%;   /* コックピットの上にのせる */
+}
+.title-badge {
+  font-size: clamp(16px, 3.2vw, 28px);
+  font-weight: 800;
+  color: #5e3d22;
+  background: #ffe14d;
+  padding: 6px 22px;
+  border-radius: 999px;
+  box-shadow: 0 4px 0 #c9a000;
+  margin-bottom: 14px;
 }
 .title-logo {
-  font-size: clamp(40px, 9vw, 96px);
+  font-size: clamp(46px, 11vw, 110px);
   font-weight: 900;
+  line-height: 1.02;
   letter-spacing: 2px;
   color: #ffe14d;
-  text-shadow: 0 4px 0 #c98a00, 0 8px 18px rgba(0,0,0,.5);
+  text-shadow: 0 5px 0 #b5651d, 0 9px 0 #7a3f10, 0 14px 20px rgba(0,0,0,.45);
   transform: rotate(-3deg);
-  margin-bottom: 8px;
+  margin-bottom: 14px;
 }
 .title-sub {
   font-size: clamp(18px, 3.5vw, 32px);
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
   background: #e8513f;
-  padding: 8px 26px;
+  padding: 8px 28px;
   border-radius: 999px;
   box-shadow: 0 4px 0 #a8331f;
-  margin-bottom: 50px;
-}
-/* タイトルに飾りのトロッコ */
-.title-cart {
-  font-size: clamp(60px, 12vw, 130px);
-  margin-bottom: 30px;
-  animation: bob 1.2s ease-in-out infinite;
+  margin-bottom: 42px;
+  letter-spacing: 1px;
 }
 @keyframes bob {
   0%, 100% { transform: translateY(0) rotate(-2deg); }
   50%      { transform: translateY(-14px) rotate(2deg); }
 }
+/* 表紙・クリアのコックピットはゆっくり待機アニメ */
+#titleScreen .cockpit,
+#clearScreen .cockpit { animation: cockpitShake 1s ease-in-out infinite; }
 
 /* 大きなボタン共通 */
 .big-btn {
@@ -573,31 +595,69 @@ html, body {
 /* ===========================================================
    クリア画面
    =========================================================== */
-#clearScreen {
-  background: linear-gradient(180deg, #0d3a1a 0%, #1c8a3c 60%, #ffd23f 100%);
-  color: #fff;
-  text-align: center;
-  z-index: 40;
-}
-.clear-cart { font-size: clamp(60px, 13vw, 130px); margin-bottom: 6px; animation: bob 1.2s ease-in-out infinite; }
+#clearScreen { color: #fff; text-align: center; z-index: 40; }
 .clear-title {
-  font-size: clamp(44px, 10vw, 100px);
+  font-size: clamp(48px, 11vw, 110px);
   font-weight: 900;
   color: #ffe14d;
-  text-shadow: 0 4px 0 #1f8c3c, 0 8px 18px rgba(0,0,0,.5);
-  margin-bottom: 14px;
+  text-shadow: 0 5px 0 #b5651d, 0 9px 0 #7a3f10, 0 14px 20px rgba(0,0,0,.45);
+  transform: rotate(-2deg);
+  margin-bottom: 10px;
+}
+.clear-sub {
+  font-size: clamp(18px, 3.6vw, 30px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.5);
+  margin-bottom: 22px;
+}
+/* タイム表示（スコア・問題数のかわり） */
+.time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,.92);
+  border: 4px solid #ffe14d;
+  border-radius: 22px;
+  padding: 14px 40px;
+  box-shadow: 0 6px 0 rgba(0,0,0,.25);
+  margin-bottom: 36px;
+}
+.time-label {
+  font-size: clamp(15px, 3vw, 22px);
+  font-weight: 800;
+  color: #b5651d;
+  letter-spacing: 2px;
+}
+.time-value {
+  font-size: clamp(44px, 10vw, 80px);
+  font-weight: 900;
+  color: #1c6b8a;
+  line-height: 1;
+}
+.time-unit {
+  font-size: 0.45em;
+  font-weight: 800;
+  color: #5e3d22;
+  margin-left: 6px;
 }
 </style>
 </head>
 <body>
 <div id="game">
 
-  <!-- ============ タイトル画面 ============ -->
-  <section id="titleScreen" class="screen active">
-    <div class="title-cart">🛒💨</div>
-    <h1 class="title-logo">ひっさん<br>トロッコ</h1>
-    <div class="title-sub">2けたの ひきざん クイズ</div>
-    <button class="big-btn" id="startBtn">スタート</button>
+  <!-- ============ タイトル画面（表紙） ============ -->
+  <section id="titleScreen" class="screen active scene">
+    <div class="cliff left"></div>
+    <div class="cliff right"></div>
+    <img class="cockpit" src="cockpit.png" alt="">
+    <div class="title-content">
+      <div class="title-badge">2けたの ひきざん</div>
+      <h1 class="title-logo">ひっさん<br>トロッコ</h1>
+      <div class="title-sub">アドベンチャー</div>
+      <button class="big-btn" id="startBtn">スタート</button>
+    </div>
   </section>
 
   <!-- ============ プレイ画面 ============ -->
@@ -661,12 +721,20 @@ html, body {
   </section>
 
   <!-- ============ クリア（ぜんもんとっぱ）画面 ============ -->
-  <section id="clearScreen" class="screen">
-    <div class="clear-cart">🎉🛒🎉</div>
-    <h2 class="clear-title">ゴール！</h2>
-    <p class="result">10もん クリア だ！<br>きみは ひっさん名人！</p>
-    <p class="result"><span class="big" id="clearScore">0</span> もん せいかい</p>
-    <button class="big-btn" id="clearRetryBtn" style="margin-top:30px;">もう いちど</button>
+  <section id="clearScreen" class="screen scene">
+    <div class="cliff left"></div>
+    <div class="cliff right"></div>
+    <img class="cockpit" src="cockpit.png" alt="">
+    <div class="title-content">
+      <h2 class="clear-title">ゴール！</h2>
+      <p class="clear-sub">きみは ひっさん名人！</p>
+      <!-- タイム表示（スコア・問題数のかわり） -->
+      <div class="time-box">
+        <span class="time-label">クリアタイム</span>
+        <span class="time-value"><span id="clearTime">0.0</span><span class="time-unit">びょう</span></span>
+      </div>
+      <button class="big-btn" id="clearRetryBtn">もう いちど</button>
+    </div>
   </section>
 
 </div>
@@ -698,6 +766,10 @@ let current = null;     // 現在の問題 { a, b, answer, leftVal, rightVal, co
 let locked = false;     // 演出中の入力ロック
 let timerId = null;     // 制限時間タイマー
 let dangerId = null;    // 残り時間わずかの警告タイマー
+
+/* タイム計測：各問の「出題〜解答」にかかった時間を裏で合計する */
+let totalTimeMs = 0;    // クリアまでの合計タイム（ミリ秒）
+let qStartAt = 0;       // 現在の問題が表示された時刻
 
 const elQuestion  = document.getElementById('question');
 const elStageNum  = document.getElementById('stageNum');
@@ -854,6 +926,7 @@ function defeatBoss() {
    =========================================================== */
 function startTimer() {
   clearTimers();
+  qStartAt = performance.now();   // この問題の計測開始
   elTimerBar.classList.remove('danger');
   // バーをいったん満タンに戻してから10秒かけて減らす
   elTimerBar.style.transition = 'none';
@@ -915,6 +988,7 @@ function choose(side) {
 
   if (side === current.correctSide) {
     // --- 正解 ---
+    totalTimeMs += performance.now() - qStartAt; // この問にかかった時間を合計に加える
     score++;
     elFlash.classList.add('show');
     setTimeout(() => elFlash.classList.remove('show'), 450);
@@ -951,11 +1025,22 @@ function gameOver(reason) {
   }, 1700); // shake(0.5s) + fadeBlack(1.2s)
 }
 
+/* 合計タイム（ミリ秒）を「12.3」や「1ぷん 5.3」の形に整える */
+function formatTime(ms) {
+  const sec = ms / 1000;
+  if (sec >= 60) {
+    const m = Math.floor(sec / 60);
+    const s = (sec - m * 60).toFixed(1);
+    return `${m}ぷん ${s}`;
+  }
+  return sec.toFixed(1);
+}
+
 /* 全問クリア */
 function winGame() {
   clearTimers();
   stopBoss();
-  document.getElementById('clearScore').textContent = score;
+  document.getElementById('clearTime').textContent = formatTime(totalTimeMs);
   showScreen('clear');
 }
 
@@ -965,6 +1050,7 @@ function winGame() {
 function startGame() {
   stage = 1;
   score = 0;
+  totalTimeMs = 0;                  // タイムをリセット
   elStageNum.textContent = 1;
   clearTimers();
   stopBoss();                       // ボスの状態をリセット
