@@ -644,55 +644,74 @@ html, body {
 .over-correct b { color: #9be79b; }
 
 /* ===========================================================
-   クリア画面
+   クリア画面（1枚イラスト＋オーバーレイ）
    =========================================================== */
-#clearScreen { color: #fff; text-align: center; z-index: 40; }
-.clear-title {
-  font-size: clamp(48px, 11vw, 110px);
-  font-weight: 900;
-  color: #ffe14d;
-  text-shadow: 0 5px 0 #b5651d, 0 9px 0 #7a3f10, 0 14px 20px rgba(0,0,0,.45);
-  transform: rotate(-2deg);
-  margin-bottom: 10px;
+#clearScreen { z-index: 40; background: #cfe6f2; }
+
+/* イラストと同じ比率の舞台。中にイラストを敷き、％でオーバーレイ位置を合わせる */
+.clear-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(100%, calc(100vh * 3054 / 1376));
+  aspect-ratio: 3054 / 1376;
+  z-index: 1;
+  container-type: size;   /* 中の文字をイラストの縮尺(cqw)に合わせる */
 }
-.clear-sub {
-  font-size: clamp(18px, 3.6vw, 30px);
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 2px 6px rgba(0,0,0,.5);
-  margin-bottom: 22px;
-}
-/* タイム表示（スコア・問題数のかわり） */
-.time-box {
+.clear-img { display: block; width: 100%; height: 100%; }
+
+/* イラストの「最終スコア／クリアした計算」を隠してタイムを出す板 */
+.clear-time-overlay {
+  position: absolute;
+  left: 52%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: 21%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  background: rgba(255,255,255,.92);
-  border: 4px solid #ffe14d;
-  border-radius: 22px;
-  padding: 14px 40px;
-  box-shadow: 0 6px 0 rgba(0,0,0,.25);
-  margin-bottom: 36px;
+  gap: 0.4cqw;
+  background: #f3e2c0;                 /* 木の看板っぽいクリーム色で確実に隠す */
+  border: 0.3cqw solid #8a5a2b;
+  border-radius: 1.4cqw;
+  padding: 1.4cqw 1.6cqw;
+  box-shadow: 0 0.3cqw 0 #6e4520, inset 0 0 0 0.2cqw rgba(255,255,255,.4);
 }
-.time-label {
-  font-size: clamp(15px, 3vw, 22px);
+.ct-label {
+  font-size: 2.3cqw;
   font-weight: 800;
-  color: #b5651d;
-  letter-spacing: 2px;
+  color: #8a4b18;
+  letter-spacing: 1px;
 }
-.time-value {
-  font-size: clamp(44px, 10vw, 80px);
+.ct-value {
+  font-size: 5cqw;
   font-weight: 900;
   color: #1c6b8a;
   line-height: 1;
+  white-space: nowrap;
 }
-.time-unit {
-  font-size: 0.45em;
-  font-weight: 800;
-  color: #5e3d22;
-  margin-left: 6px;
+.ct-unit { font-size: 0.42em; font-weight: 800; color: #5e3d22; margin-left: 0.4cqw; }
+
+/* イラストのボタンに重ねる、実際に押せるボタン */
+.clear-btn {
+  position: absolute;
+  bottom: 6%;
+  width: 19%;
+  height: 13%;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 900;
+  color: #fff;
+  font-size: 2.7cqw;
+  cursor: pointer;
+  box-shadow: 0 0.4cqw 0 rgba(0,0,0,.3);
+  transition: transform .08s, box-shadow .08s;
 }
+.clear-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.clear-btn.home  { left: 27.5%; background: linear-gradient(180deg,#ff7a8a,#e8455f); }
+.clear-btn.retry { left: 53.5%; background: linear-gradient(180deg,#46c6e6,#2a8fc4); }
 </style>
 </head>
 <body>
@@ -767,20 +786,21 @@ html, body {
     <button class="big-btn retry" id="retryBtn">もう いちど</button>
   </section>
 
-  <!-- ============ クリア（ぜんもんとっぱ）画面 ============ -->
-  <section id="clearScreen" class="screen scene">
-    <div class="cliff left"></div>
-    <div class="cliff right"></div>
-    <img class="cockpit" src="cockpit.png" alt="">
-    <div class="title-content">
-      <h2 class="clear-title">ゴール！</h2>
-      <p class="clear-sub">きみは ひきざん名人！</p>
-      <!-- タイム表示（スコア・問題数のかわり） -->
-      <div class="time-box">
-        <span class="time-label">クリアタイム</span>
-        <span class="time-value"><span id="clearTime">0.0</span><span class="time-unit">びょう</span></span>
+  <!-- ============ クリア（ぜんもんとっぱ）画面＝1枚イラスト ============ -->
+  <section id="clearScreen" class="screen">
+    <!-- 余白を埋める、ぼかした背景 -->
+    <img class="cover-bg" src="clear.png" alt="" aria-hidden="true">
+    <!-- イラストと同じ比率の舞台（オーバーレイ位置を正確に合わせるため） -->
+    <div class="clear-stage">
+      <img class="clear-img" src="clear.png" alt="算数大冒険クリア！">
+      <!-- イラストの「最終スコア／クリアした計算」を隠して、クリアタイムを表示 -->
+      <div class="clear-time-overlay">
+        <span class="ct-label">クリアタイム</span>
+        <span class="ct-value"><span id="clearTime">0.0</span><span class="ct-unit">びょう</span></span>
       </div>
-      <button class="big-btn" id="clearRetryBtn">もう いちど</button>
+      <!-- 実際に押せるボタン（イラストのボタンに重ねる） -->
+      <button class="clear-btn home"  id="clearHomeBtn">表紙へ戻る</button>
+      <button class="clear-btn retry" id="clearRetryBtn">もう一度遊ぶ</button>
     </div>
   </section>
 
@@ -1113,6 +1133,7 @@ function startGame() {
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('retryBtn').addEventListener('click', startGame);
 document.getElementById('clearRetryBtn').addEventListener('click', startGame);
+document.getElementById('clearHomeBtn').addEventListener('click', () => showScreen('title'));
 document.getElementById('zoneLeft').addEventListener('click', () => choose('left'));
 document.getElementById('zoneRight').addEventListener('click', () => choose('right'));
 
