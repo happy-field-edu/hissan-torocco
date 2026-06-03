@@ -712,6 +712,47 @@ html, body {
 .clear-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.3); }
 .clear-btn.home  { left: 29%; background: linear-gradient(180deg,#ff7a8a,#e8455f); }
 .clear-btn.retry { left: 50%; background: linear-gradient(180deg,#46c6e6,#2a8fc4); }
+
+/* ===========================================================
+   ゲームオーバー画面（1枚イラスト＋オーバーレイ）
+   =========================================================== */
+#overScreen { z-index: 40; background: #2b2f3a; }
+/* イラストの「今回のスコア／正解数」を隠して、正解の答えを出す石板 */
+.over-answer-overlay {
+  position: absolute;
+  left: 53.4%;
+  top: 39%;
+  transform: translate(-50%, -50%);
+  width: 27%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3cqw;
+  background: linear-gradient(180deg, #9a9ca6, #6c6e78);  /* 石板っぽいグレー */
+  border: 0.3cqw solid #3c3d44;
+  border-radius: 1.4cqw;
+  padding: 1.2cqw 1.6cqw;
+  box-shadow: 0 0.3cqw 0 #3c3d44, inset 0 0 0 0.2cqw rgba(255,255,255,.25);
+}
+.oa-label {
+  font-size: 2.3cqw;
+  font-weight: 800;
+  color: #ffe14d;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+.oa-eq {
+  font-size: 4.4cqw;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 3px rgba(0,0,0,.55);
+}
+/* ゲームオーバーのボタンは元イラストの位置に合わせる */
+#overScreen .clear-btn { bottom: 5%; }
+#overScreen .clear-btn.home  { left: 32%; }
+#overScreen .clear-btn.retry { left: 50.5%; }
 </style>
 </head>
 <body>
@@ -777,13 +818,22 @@ html, body {
     <div class="flash-correct" id="flash"></div>
   </section>
 
-  <!-- ============ ゲームオーバー画面 ============ -->
+  <!-- ============ ゲームオーバー画面＝1枚イラスト ============ -->
   <section id="overScreen" class="screen">
-    <div class="over-cart">💥🛒</div>
-    <h2 class="over-title">ゲームオーバー</h2>
-    <p class="result">れんぞくせいかい <span class="big" id="finalScore">0</span> もん！</p>
-    <p class="over-correct" id="overCorrect"></p>
-    <button class="big-btn retry" id="retryBtn">もう いちど</button>
+    <!-- 余白を埋める、ぼかした背景 -->
+    <img class="cover-bg" src="gameover.png" alt="" aria-hidden="true">
+    <!-- イラストと同じ比率の舞台 -->
+    <div class="clear-stage">
+      <img class="clear-img" src="gameover.png" alt="ゲームオーバー">
+      <!-- イラストの「今回のスコア／正解数」を隠して、正解の答えを表示 -->
+      <div class="over-answer-overlay">
+        <span class="oa-label" id="overLabel">せいかいは</span>
+        <span class="oa-eq" id="overCorrect">53 − 26 = 27</span>
+      </div>
+      <!-- 実際に押せるボタン（イラストのボタンに重ねる） -->
+      <button class="clear-btn home"  id="overHomeBtn">表紙へ戻る</button>
+      <button class="clear-btn retry" id="retryBtn">もう一度遊ぶ</button>
+    </div>
   </section>
 
   <!-- ============ クリア（ぜんもんとっぱ）画面＝1枚イラスト ============ -->
@@ -1083,11 +1133,11 @@ function gameOver(reason) {
   elPlay.classList.add('crash');
   setTimeout(() => {
     elPlay.classList.remove('crash');
-    document.getElementById('finalScore').textContent = score;
-    // 時間切れか不正解かで前置きを変えつつ、正しい答えを振り返り表示
-    const head = (reason === 'timeup') ? 'じかんぎれ！ ' : '';
-    document.getElementById('overCorrect').innerHTML =
-      `${head}${current.a} - ${current.b} の こたえは <b>${current.answer}</b> だよ`;
+    // 石板に「正解の答え」を表示（学習のふりかえり）
+    document.getElementById('overLabel').textContent =
+      (reason === 'timeup') ? 'じかんぎれ！ せいかいは' : 'せいかいは';
+    document.getElementById('overCorrect').textContent =
+      `${current.a} − ${current.b} = ${current.answer}`;
     showScreen('over');
   }, 1700); // shake(0.5s) + fadeBlack(1.2s)
 }
@@ -1134,6 +1184,7 @@ document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('retryBtn').addEventListener('click', startGame);
 document.getElementById('clearRetryBtn').addEventListener('click', startGame);
 document.getElementById('clearHomeBtn').addEventListener('click', () => showScreen('title'));
+document.getElementById('overHomeBtn').addEventListener('click', () => showScreen('title'));
 document.getElementById('zoneLeft').addEventListener('click', () => choose('left'));
 document.getElementById('zoneRight').addEventListener('click', () => choose('right'));
 
