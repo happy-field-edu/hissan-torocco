@@ -211,13 +211,23 @@ html, body {
 }
 /* どの瞬間も translate(-50%,-50%) を保ちつつ、小さく上下左右に揺らす */
 @keyframes rumble {
-  0%,100% { transform: translate(-50%, calc(-50% - var(--sh))); }
-  20%     { transform: translate(calc(-50% + var(--sh) * 0.5), calc(-50% + var(--sh) * 0.8)); }
-  40%     { transform: translate(calc(-50% - var(--sh) * 0.3), calc(-50% - var(--sh) * 0.6)); }
-  60%     { transform: translate(calc(-50% + var(--sh) * 0.2), calc(-50% + var(--sh))); }
-  80%     { transform: translate(calc(-50% - var(--sh) * 0.4), calc(-50% - var(--sh) * 0.3)); }
+  0%,100% { transform: translate(-50%, calc(-50% - var(--sh))) rotate(var(--tilt,0deg)) scale(var(--tsc,1)); }
+  20%     { transform: translate(calc(-50% + var(--sh) * 0.5), calc(-50% + var(--sh) * 0.8)) rotate(var(--tilt,0deg)) scale(var(--tsc,1)); }
+  40%     { transform: translate(calc(-50% - var(--sh) * 0.3), calc(-50% - var(--sh) * 0.6)) rotate(var(--tilt,0deg)) scale(var(--tsc,1)); }
+  60%     { transform: translate(calc(-50% + var(--sh) * 0.2), calc(-50% + var(--sh))) rotate(var(--tilt,0deg)) scale(var(--tsc,1)); }
+  80%     { transform: translate(calc(-50% - var(--sh) * 0.4), calc(-50% - var(--sh) * 0.3)) rotate(var(--tilt,0deg)) scale(var(--tsc,1)); }
 }
-.scene-img { position:absolute; inset:0; width:100%; height:100%; }
+.scene-img {
+  position:absolute; inset:0; width:100%; height:100%;
+  transition: filter .6s ease;   /* ステージで雰囲気が変わる */
+}
+/* 3段階の険しさ：シーンのフィルター */
+#playScreen.tier-0 .scene-img { filter: brightness(1.10) saturate(1.06); }     /* 1〜3問: 明るく爽やか */
+#playScreen.tier-1 .scene-img { filter: none; }                                /* 4〜6問: そのまま険しい山道 */
+#playScreen.tier-2 .scene-img { filter: brightness(.82) contrast(1.08) saturate(1.2) hue-rotate(-12deg); } /* 7〜9問: 暗い・赤み（急勾配） */
+#playScreen.tier-3 .scene-img { filter: brightness(.68) saturate(1.25) hue-rotate(-22deg); }              /* 10問: 魔界 */
+/* 7〜9問は車体を少し傾けて急勾配感 */
+#playScreen.tier-2 .play-stage { --tilt: -2.2deg; --tsc: 1.07; }
 
 /* --- スピード線（集中線）：消失点(50%,40%)から放射状に流れる --- */
 .speedlines {
@@ -727,15 +737,17 @@ html, body {
   background: transparent;
   transition: background .6s ease;
 }
-/* tier-0（1〜3問目）：快晴 → ムードなし（透明） */
-
-/* tier-1（4〜6問目）：夕暮れのオレンジ */
-#playScreen.tier-1 .mood {
-  background: linear-gradient(180deg, rgba(255,140,40,.20), rgba(150,50,20,.42));
+/* tier-0（1〜3問目）：さわやかな昼。爽やかな空色を薄くのせる */
+#playScreen.tier-0 .mood {
+  background: linear-gradient(180deg, rgba(150,210,255,.22) 0%, rgba(255,255,255,0) 45%);
 }
-/* tier-2（7〜9問目）：夜・青紫のたそがれ */
+/* tier-1（4〜6問目）：険しい山道（味付けなし＝そのまま） */
+#playScreen.tier-1 .mood { background: transparent; }
+/* tier-2（7〜9問目）：急勾配・マグマのような赤 */
 #playScreen.tier-2 .mood {
-  background: linear-gradient(180deg, rgba(40,25,90,.50), rgba(8,4,30,.65));
+  background: linear-gradient(180deg,
+    rgba(120,15,0,.42) 0%, rgba(255,80,10,.30) 45%, rgba(70,0,0,.55) 100%);
+  animation: moodPulse 1.8s ease-in-out infinite;
 }
 /* tier-3（10問目・ラスボス）：紫×マゼンタの魔界。脈打つ */
 #playScreen.tier-3 .mood {
