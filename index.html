@@ -204,8 +204,49 @@ html, body {
   container-type: size;   /* 中の要素を画像縮尺(cqw)で配置 */
   overflow: hidden;
   z-index: 1;
+  /* トロッコの振動（ガタガタ感）。コンボで揺れ幅・速さUP */
+  --sh: calc((0.6 + var(--combo,0) * 0.5) * 1px);
+  animation: rumble calc((0.2 - var(--combo,0) * 0.011) * 1s) linear infinite;
+  will-change: transform;
+}
+/* どの瞬間も translate(-50%,-50%) を保ちつつ、小さく上下左右に揺らす */
+@keyframes rumble {
+  0%,100% { transform: translate(-50%, calc(-50% - var(--sh))); }
+  20%     { transform: translate(calc(-50% + var(--sh) * 0.5), calc(-50% + var(--sh) * 0.8)); }
+  40%     { transform: translate(calc(-50% - var(--sh) * 0.3), calc(-50% - var(--sh) * 0.6)); }
+  60%     { transform: translate(calc(-50% + var(--sh) * 0.2), calc(-50% + var(--sh))); }
+  80%     { transform: translate(calc(-50% - var(--sh) * 0.4), calc(-50% - var(--sh) * 0.3)); }
 }
 .scene-img { position:absolute; inset:0; width:100%; height:100%; }
+
+/* --- スピード線（集中線）：消失点(50%,40%)から放射状に流れる --- */
+.speedlines {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: calc(0.16 + var(--combo,0) * 0.055);   /* コンボで濃く */
+  transition: opacity .4s;
+  mix-blend-mode: screen;
+}
+.speedlines span {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 0.7cqw;
+  height: 70cqw;
+  margin-left: -0.35cqw;
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0) 0%, rgba(255,255,255,.95) 55%, rgba(255,255,255,0) 100%);
+  transform-origin: 50% 0;     /* 上端＝消失点を軸に放射 */
+  animation: streak calc((1.25 - var(--combo,0) * 0.075) * 1s) linear infinite;
+}
+@keyframes streak {
+  0%   { transform: rotate(var(--a,0deg)) translateY(0) scaleY(.08); opacity: 0; }
+  18%  { opacity: 1; }
+  100% { transform: rotate(var(--a,0deg)) translateY(9cqw) scaleY(1); opacity: 0; }
+}
 
 /* --- 速度計（コンボで針が右へ） 中心≈(57.4%,74.6%) --- */
 .speedo {
@@ -922,6 +963,9 @@ html, body {
       <!-- コックピット＋山道のメイン画像 -->
       <img class="scene-img" src="scene.png" alt="">
 
+      <!-- スピード線（集中線）：奥から手前へ流れる。コンボで加速 -->
+      <div class="speedlines" id="speedlines" aria-hidden="true"></div>
+
       <!-- 禍々しさのムード（ボスステージで紫に） -->
       <div class="mood"></div>
 
@@ -1428,6 +1472,20 @@ function jumpToBossIfRequested() {
 }
 window.addEventListener('hashchange', jumpToBossIfRequested);
 jumpToBossIfRequested();
+
+/* スピード線（集中線）を放射状に生成 */
+(function buildSpeedlines() {
+  const c = document.getElementById('speedlines');
+  if (!c) return;
+  const N = 18;
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('span');
+    const ang = (360 / N) * i + (Math.random() * 12 - 6);
+    s.style.setProperty('--a', ang.toFixed(1) + 'deg');
+    s.style.animationDelay = (-(Math.random() * 1.25)).toFixed(2) + 's';
+    c.appendChild(s);
+  }
+})();
 </script>
 </body>
 </html>
