@@ -1310,6 +1310,118 @@ html, body {
   animation: getTextPop .5s cubic-bezier(.2,1.6,.4,1) both;
 }
 @keyframes getTextPop { 0%{transform:translateX(-50%) scale(0);} 100%{transform:translateX(-50%) scale(1);} }
+/* ===========================================================
+   新ショップ：パーツ／アクセサリー／消費アイテム＋図鑑
+   =========================================================== */
+/* カスタムパーツ：ハンドルに重ねる透過PNG */
+.part-overlay {
+  position: absolute; left: 50%; bottom: -1%;
+  width: 38cqw; height: auto;
+  transform: translateX(-50%);
+  z-index: 4; display: none; pointer-events: none;
+  filter: drop-shadow(0 0 1cqw rgba(255,220,120,.6));
+}
+/* アクセサリー：天井から吊るしてゆらゆら */
+.accessory {
+  position: absolute; left: 30%; top: 0;
+  z-index: 4; display: none; pointer-events: none;
+  transform-origin: 50% 0;
+  animation: accSwing 3.2s ease-in-out infinite;
+  text-align: center;
+}
+.acc-cord { display: block; width: 0.5cqw; height: 9cqw; margin: 0 auto; background: linear-gradient(#7a5a3a,#c9a26a); border-radius: 1cqw; }
+.acc-item { display: block; font-size: 7cqw; line-height: 1; margin-top: -0.5cqw; filter: drop-shadow(0 0.4cqw 0.4cqw rgba(0,0,0,.4)); }
+.accessory.glow .acc-item { animation: accGlow 1.4s ease-in-out infinite; }
+@keyframes accSwing { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes accGlow {
+  0%,100% { filter: drop-shadow(0 0 0.6cqw rgba(255,200,80,.6)); }
+  50%     { filter: drop-shadow(0 0 2.2cqw rgba(255,220,120,1)); }
+}
+
+/* 使用中アイテムのアイコン（プレイ中・左上） */
+.active-items { position: absolute; top: 104px; left: 16px; display: flex; gap: 6px; }
+.ai-icon {
+  background: rgba(20,12,30,.55); color: #fff; font-weight: 900;
+  font-size: clamp(15px,2.6vw,22px); padding: 4px 10px; border-radius: 12px;
+  box-shadow: 0 3px 0 rgba(0,0,0,.25);
+}
+
+/* ふたばシールド発動演出 */
+.shield-block { position: absolute; left: 50%; top: 45%; transform: translate(-50%,-50%); z-index: 9; pointer-events: none; }
+.shield-ring {
+  position: absolute; left: 50%; top: 50%; width: 26cqw; height: 26cqw; margin: -13cqw 0 0 -13cqw;
+  border-radius: 50%; border: 1cqw solid #5ad6ff;
+  box-shadow: 0 0 4cqw #5ad6ff, inset 0 0 3cqw #bfefff;
+  transform: scale(.3); opacity: 0; animation: shieldRing .8s ease-out forwards;
+}
+@keyframes shieldRing { 0%{transform:scale(.3);opacity:1;} 100%{transform:scale(1.2);opacity:0;} }
+.shield-text {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0);
+  font-size: 6cqw; font-weight: 900; color: #fff; white-space: nowrap;
+  -webkit-text-stroke: 0.4cqw #2a8fc4; text-shadow: 0 0.4cqw 0 #1f5f95;
+  animation: shieldPop .8s cubic-bezier(.2,1.6,.4,1) forwards;
+}
+@keyframes shieldPop { 0%{transform:translate(-50%,-50%) scale(0);} 40%{transform:translate(-50%,-50%) scale(1.15);} 80%{transform:translate(-50%,-50%) scale(1);opacity:1;} 100%{transform:translate(-50%,-50%) scale(1.05);opacity:0;} }
+
+/* ショップ：説明文・所持数 */
+.shop-desc { font-size: clamp(10px,2vw,14px); color: #5a4a7a; line-height: 1.2; }
+.shop-count { font-size: clamp(11px,2.1vw,15px); font-weight: 800; color: #2a8fc4; }
+
+/* タイトルの図鑑ボタン */
+.zukan-open {
+  position: absolute; bottom: calc(7% - 150px); left: 50%; transform: translateX(-50%);
+  z-index: 10; background: #6a8fd8; box-shadow: 0 7px 0 #415f95, 0 10px 22px rgba(0,0,0,.4);
+  font-size: clamp(18px,3.2vw,28px); padding: 14px 38px;
+}
+.zukan-open:active { box-shadow: 0 2px 0 #415f95; transform: translateX(-50%) translateY(5px); }
+
+/* モーダル共通 */
+.modal {
+  position: absolute; inset: 0; z-index: 70; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(10,6,24,.7);
+}
+.modal.show { display: flex; }
+.modal-box {
+  width: min(92%, 820px); max-height: 88%;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg,#2a1b4a,#3a2570);
+  border: 4px solid #ffe14d; border-radius: 22px;
+  padding: 16px; box-shadow: 0 12px 40px rgba(0,0,0,.6);
+}
+.modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.modal-title { font-size: clamp(24px,5vw,40px); font-weight: 900; color: #ffe14d; text-shadow: 0 3px 0 #a8331f; }
+.modal-close, .item-start {
+  align-self: center; margin-top: 12px; flex: 0 0 auto;
+  background: #34c759; box-shadow: 0 7px 0 #1f8c3c, 0 10px 22px rgba(0,0,0,.4);
+}
+.modal-close { background:#e8513f; box-shadow:0 7px 0 #a8331f, 0 10px 22px rgba(0,0,0,.4); }
+.zukan-progress { color:#fff; font-weight:800; font-size:clamp(14px,2.8vw,22px); background:rgba(0,0,0,.3); padding:4px 14px; border-radius:12px; }
+
+/* 図鑑グリッド */
+.zukan-grid { overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.zukan-cat { color:#fff; font-weight:900; font-size:clamp(15px,2.8vw,22px); margin:10px 4px 6px; }
+.zukan-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.zukan-cell { background:rgba(255,255,255,.1); border-radius:14px; padding:8px 4px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.zukan-ic { width:clamp(44px,9vw,72px); height:clamp(44px,9vw,72px); object-fit:contain; display:flex; align-items:center; justify-content:center; font-size:clamp(30px,6vw,50px); }
+.zukan-ic.locked { filter: brightness(0) opacity(.55); }   /* 画像は黒シルエット */
+.zukan-ic.emoji.locked { filter:none; color:#000; opacity:.5; }
+.zukan-name { color:#fff; font-weight:800; font-size:clamp(11px,2.2vw,15px); }
+
+/* プレイ前アイテム選択 */
+.item-arm-list { display:flex; flex-direction:column; gap:10px; overflow-y:auto; }
+.item-arm {
+  display:flex; align-items:center; gap:12px; text-align:left;
+  background:rgba(255,255,255,.95); border:3px solid #ccc; border-radius:16px;
+  padding:10px 14px; font-family:inherit; cursor:pointer;
+}
+.item-arm.on { border-color:#34c759; background:#eafff0; }
+.ia-emoji { font-size:clamp(28px,6vw,44px); }
+.ia-info { flex:1; display:flex; flex-direction:column; color:#3a2570; }
+.ia-info b { font-size:clamp(15px,3vw,22px); }
+.ia-info small { font-size:clamp(11px,2.2vw,15px); color:#6a5a8a; }
+.ia-toggle { font-weight:900; font-size:clamp(14px,2.8vw,20px); color:#fff; background:#b0b4bb; border-radius:999px; padding:4px 14px; }
+.item-arm.on .ia-toggle { background:#34c759; }
 </style>
 </head>
 <body>
@@ -1327,7 +1439,29 @@ html, body {
     </div>
     <button class="big-btn cover-start" id="startBtn">スタート</button>
     <button class="big-btn shop-open" id="shopBtn">💎 ジュエルショップ</button>
+    <button class="big-btn zukan-open" id="zukanBtn">📖 おたから図鑑</button>
   </section>
+
+  <!-- ============ おたから図鑑（モーダル） ============ -->
+  <div class="modal" id="zukanModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 class="modal-title">📖 おたから図鑑</h2>
+        <span class="zukan-progress" id="zukanProgress"></span>
+      </div>
+      <div class="zukan-grid" id="zukanGrid"></div>
+      <button class="big-btn modal-close" id="zukanCloseBtn">とじる</button>
+    </div>
+  </div>
+
+  <!-- ============ プレイ前：おたすけアイテム選択（モーダル） ============ -->
+  <div class="modal" id="itemModal">
+    <div class="modal-box">
+      <h2 class="modal-title">🎒 アイテムをつかう？</h2>
+      <div class="item-arm-list" id="itemArmList"></div>
+      <button class="big-btn item-start" id="itemStartBtn">はじめる！</button>
+    </div>
+  </div>
 
   <!-- ============ ジュエルショップ画面 ============ -->
   <section id="shopScreen" class="screen">
@@ -1380,9 +1514,13 @@ html, body {
       </div>
 
       <!-- カスタマイズ（ショップで購入・装備） -->
-      <div class="trolley-tint" id="trolleyTint"></div>            <!-- トロッコの色（縁の差し色） -->
-      <div class="shelf" id="shelf"><span class="shelf-item" id="shelfItem"></span></div>  <!-- 置物の棚 -->
-      <div class="sticker" id="sticker"></div>                     <!-- ステッカー -->
+      <!-- カスタムパーツ：ハンドルに重ねる透過PNG（画像は後日） -->
+      <img class="part-overlay" id="partOverlay" alt="" onerror="this.style.display='none'">
+      <!-- アクセサリー：天井から吊るしてゆらゆら -->
+      <div class="accessory" id="accessory">
+        <span class="acc-cord"></span>
+        <span class="acc-item" id="accessoryItem"></span>
+      </div>
       <img class="ship-mini" id="shipMini" src="spaceship.png" alt="">  <!-- スペース・ジュエル号の模型 -->
       <img class="uni-mini" id="uniMini" src="unicorn.png" alt="">      <!-- ユニコーンの模型 -->
       <img class="sword-mini" id="swordMini" src="sword.png" alt="">   <!-- 伝説の剣 -->
@@ -1409,6 +1547,8 @@ html, body {
         <span class="gem" style="--gc:#7ad0ff; --gs:20px"></span>
         <span class="jewel-amount">0</span>
       </div>
+      <!-- 使用中のお助けアイテム -->
+      <div class="active-items" id="activeItems"></div>
       <div class="prompt-go" id="promptGo">どっちに すすむ？</div>
     </div>
 
@@ -1523,62 +1663,77 @@ const SAVE_KEY = 'trocco_save_v1';
 
 // 購入できるアイテム一覧
 const SHOP = [
-  { id:'sword_special',   cat:'special', name:'でんせつの剣',         price:2000, val:'sword.png', img:true },
-  { id:'ship_special',    cat:'special', name:'スペース・ジュエル号',   price:1000, val:'spaceship.png', img:true },
-  { id:'unicorn_special', cat:'special', name:'でんせつのユニコーン', price:1500, val:'unicorn.png', img:true },
-  { id:'color_red',     cat:'color',   name:'あかいトロッコ', price:120, val:'#e8513f' },
-  { id:'color_blue',    cat:'color',   name:'あおいトロッコ', price:120, val:'#2f7ed8' },
-  { id:'color_gold',    cat:'color',   name:'きんのトロッコ', price:300, val:'#f4c233' },
-  { id:'fig_robot',     cat:'figure',  name:'ロボット',       price:150, val:'🤖' },
-  { id:'fig_bear',      cat:'figure',  name:'クマ',           price:150, val:'🧸' },
-  { id:'fig_cat',       cat:'figure',  name:'ねこ',           price:150, val:'🐱' },
-  { id:'sticker_star',  cat:'sticker', name:'ほし',           price:80,  val:'⭐' },
-  { id:'sticker_animal',cat:'sticker', name:'どうぶつ',       price:80,  val:'🐻' },
-  { id:'sticker_mecha', cat:'sticker', name:'メカ',           price:120, val:'⚙️' },
+  // 🌟 とくべつ景品（レア・完成済み）
+  { id:'sword_special',   cat:'special', name:'でんせつの剣',         price:2000, val:'sword.png',     img:true },
+  { id:'ship_special',    cat:'special', name:'スペース・ジュエル号', price:1000, val:'spaceship.png', img:true },
+  { id:'unicorn_special', cat:'special', name:'でんせつのユニコーン', price:1500, val:'unicorn.png',   img:true },
+  // 🛠️ カスタムパーツ（ハンドルに透過PNGを重ねる。画像は後日追加）
+  { id:'wheel_dragon',  cat:'parts', name:'ドラゴンのハンドル',   price:400, icon:'🐉', src:'part_wheel_dragon.png' },
+  { id:'wheel_crystal', cat:'parts', name:'クリスタルのハンドル', price:500, icon:'💎', src:'part_wheel_crystal.png' },
+  // 🏮 アクセサリー（天井から吊るしてゆらゆら）
+  { id:'lantern_glow', cat:'accessory', name:'光るランタン',     price:300, emoji:'🏮', glow:true },
+  { id:'compass_gold', cat:'accessory', name:'ゆらゆら羅針盤',   price:250, emoji:'🧭' },
+  // 🎒 おたすけアイテム（消費・複数所持）
+  { id:'item_shield', cat:'consumable', name:'ふたばシールド',       price:200, emoji:'🛡️', desc:'1かいミスしても とまらない' },
+  { id:'item_double', cat:'consumable', name:'ジュエル2ばいチケット', price:500, emoji:'✨', desc:'もらえるジュエルが2ばい' },
 ];
 const CAT_INFO = [
-  { cat:'special', title:'🌟 とくべつ景品（レア）' },
-  { cat:'color',   title:'トロッコの色' },
-  { cat:'figure',  title:'コックピットの置物' },
-  { cat:'sticker', title:'ステッカー' },
+  { cat:'special',    title:'🌟 とくべつ景品（レア）' },
+  { cat:'parts',      title:'🛠️ カスタムパーツ' },
+  { cat:'accessory',  title:'🏮 アクセサリー' },
+  { cat:'consumable', title:'🎒 おたすけアイテム' },
 ];
 
 function loadSave() {
-  const def = { jewels:0, owned:[], equipped:{ color:null, figure:null, sticker:null, special:null } };
+  const def = { jewels:0, owned:[], equipped:{ parts:null, accessory:null }, items:{}, seen:[] };
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
     return {
       jewels: s.jewels || 0,
       owned: Array.isArray(s.owned) ? s.owned : [],
-      equipped: Object.assign({ color:null, figure:null, sticker:null, special:null }, s.equipped || {}),
+      equipped: Object.assign({ parts:null, accessory:null }, s.equipped || {}),
+      items: (s.items && typeof s.items === 'object') ? s.items : {},   // 消費アイテムの所持数
+      seen: Array.isArray(s.seen) ? s.seen : [],                        // 図鑑：一度でも入手したID
     };
   } catch (e) { return def; }
 }
 let save = loadSave();
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 
+/* このランで使用中のお助けアイテム（プレイ開始時にON、消費される） */
+let armedShield = false;   // ふたばシールド：1回ミスを無効化
+let armedDouble = false;   // ジュエル2倍
+
+function itemCount(id) { return save.items[id] || 0; }
+function markSeen(id) { if (!save.seen.includes(id)) save.seen.push(id); }
+function isUnlocked(id) { return save.owned.includes(id) || save.seen.includes(id) || itemCount(id) > 0; }
+
 /* 全てのジュエル残高表示を更新 */
 function updateJewelUI() {
   document.querySelectorAll('.jewel-amount').forEach(el => el.textContent = save.jewels);
 }
-/* ランの宝石をジュエルに換金して保存 */
+/* ランの宝石をジュエルに換金して保存（2倍チケット適用） */
 function awardJewels() {
-  if (gemTotal > 0) { save.jewels += gemTotal * JEWELS_PER_GEM; persist(); updateJewelUI(); }
+  if (gemTotal > 0) {
+    let g = gemTotal * JEWELS_PER_GEM;
+    if (armedDouble) g *= 2;             // ジュエル2倍チケット
+    save.jewels += g; persist(); updateJewelUI();
+  }
 }
 /* 装備中のカスタマイズをコックピットに反映 */
 function applyCosmetics() {
   const eq = save.equipped;
   const find = id => SHOP.find(i => i.id === id);
-  const color = find(eq.color), fig = find(eq.figure), st = find(eq.sticker);
-  const tint = document.getElementById('trolleyTint');
-  if (color) { tint.style.setProperty('--tc', color.val); tint.style.display = 'block'; }
-  else tint.style.display = 'none';
-  const shelf = document.getElementById('shelf');
-  if (fig) { document.getElementById('shelfItem').textContent = fig.val; shelf.style.display = 'block'; }
-  else shelf.style.display = 'none';
-  const sticker = document.getElementById('sticker');
-  if (st) { sticker.textContent = st.val; sticker.style.display = 'block'; }
-  else sticker.style.display = 'none';
+  // カスタムパーツ（ハンドルに重ねる透過PNG）
+  const part = find(eq.parts);
+  const po = document.getElementById('partOverlay');
+  if (part && part.src) { if (po.getAttribute('src') !== part.src) po.src = part.src; po.style.display = 'block'; }
+  else po.style.display = 'none';
+  // アクセサリー（天井から吊り下げ・ゆらゆら）
+  const acc = find(eq.accessory);
+  const ah = document.getElementById('accessory');
+  if (acc) { document.getElementById('accessoryItem').textContent = acc.emoji; ah.classList.toggle('glow', !!acc.glow); ah.style.display = 'block'; }
+  else ah.style.display = 'none';
   // 特別景品の模型（買ったら常に表示。並べて飾る）
   document.getElementById('shipMini').style.display = save.owned.includes('ship_special') ? 'block' : 'none';
   document.getElementById('uniMini').style.display  = save.owned.includes('unicorn_special') ? 'block' : 'none';
@@ -1648,60 +1803,88 @@ function renderShop() {
 function makeShopCard(item) {
   const card = document.createElement('div');
   card.className = 'shop-card' + (item.cat === 'special' ? ' featured' : '');
-  // アイコン（画像／色スウォッチ／絵文字）
+  // アイコン（画像 or 絵文字）
   let icon;
   if (item.img) {
     icon = document.createElement('img');
-    icon.className = 'shop-img';
-    icon.src = item.val;
-    icon.alt = item.name;
-  } else if (item.cat === 'color') {
-    icon = document.createElement('div');
-    icon.className = 'shop-swatch';
-    icon.style.background = item.val;
+    icon.className = 'shop-img'; icon.src = item.val; icon.alt = item.name;
   } else {
     icon = document.createElement('div');
-    icon.className = 'shop-icon';
-    icon.textContent = item.val;
+    icon.className = 'shop-icon'; icon.textContent = item.icon || item.emoji || '❓';
   }
   card.appendChild(icon);
   const name = document.createElement('div');
-  name.className = 'shop-name';
-  name.textContent = item.name;
+  name.className = 'shop-name'; name.textContent = item.name;
   card.appendChild(name);
-  // 状態に応じたボタン
+  if (item.desc) { const d = document.createElement('div'); d.className = 'shop-desc'; d.textContent = item.desc; card.appendChild(d); }
+  if (item.cat === 'consumable' && itemCount(item.id) > 0) {
+    const c = document.createElement('div'); c.className = 'shop-count'; c.textContent = 'もってる ×' + itemCount(item.id); card.appendChild(c);
+  }
+
   const btn = document.createElement('button');
   const owned = save.owned.includes(item.id);
-  const doBuy = () => {
-    if (save.jewels < item.price) { btn.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:200}); return; }
-    save.jewels -= item.price;
-    save.owned.push(item.id);
-    if (item.cat !== 'special') save.equipped[item.cat] = item.id;  // 通常は買ったら自動装備
-    persist(); applyCosmetics(); renderShop();
-    if (item.cat === 'special') playSpecialGet(item);               // 特別景品は獲得演出
+  const priceHTML = `<span class="gem" style="--gc:#7ad0ff;--gs:16px"></span>${item.price}`;
+  const canPay = () => {
+    if (save.jewels < item.price) { btn.animate([{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:200}); return false; }
+    save.jewels -= item.price; markSeen(item.id); return true;
   };
-  if (item.cat === 'special') {
-    // 特別景品：買ったらずっとコックピットに飾られる（装備の切替なし）
-    if (owned) { btn.className = 'shop-buy equipped'; btn.textContent = 'ゲット済み'; }
-    else { btn.className = 'shop-buy' + (save.jewels >= item.price ? '' : ' cant');
-           btn.innerHTML = `<span class="gem" style="--gc:#7ad0ff;--gs:16px"></span>${item.price}`; btn.onclick = doBuy; }
-  } else if (save.equipped[item.cat] === item.id) {
-    btn.className = 'shop-buy equipped';
-    btn.textContent = 'そうび中';
-    btn.onclick = () => { save.equipped[item.cat] = null; persist(); applyCosmetics(); renderShop(); };
-  } else if (owned) {
-    btn.className = 'shop-buy equip';
-    btn.textContent = 'そうびする';
-    btn.onclick = () => { save.equipped[item.cat] = item.id; persist(); applyCosmetics(); renderShop(); };
-  } else {
+  if (item.cat === 'consumable') {
+    // 消費アイテム：何個でも買える
     btn.className = 'shop-buy' + (save.jewels >= item.price ? '' : ' cant');
-    btn.innerHTML = `<span class="gem" style="--gc:#7ad0ff;--gs:16px"></span>${item.price}`;
-    btn.onclick = doBuy;
+    btn.innerHTML = priceHTML;
+    btn.onclick = () => { if (!canPay()) return; save.items[item.id] = itemCount(item.id) + 1; persist(); renderShop(); };
+  } else if (item.cat === 'special') {
+    if (owned) { btn.className = 'shop-buy equipped'; btn.textContent = 'ゲット済み'; }
+    else { btn.className = 'shop-buy' + (save.jewels >= item.price ? '' : ' cant'); btn.innerHTML = priceHTML;
+           btn.onclick = () => { if (!canPay()) return; save.owned.push(item.id); persist(); applyCosmetics(); renderShop(); playSpecialGet(item); }; }
+  } else {
+    // parts / accessory（1つだけ装備、切替式）
+    if (save.equipped[item.cat] === item.id) {
+      btn.className = 'shop-buy equipped'; btn.textContent = 'そうび中';
+      btn.onclick = () => { save.equipped[item.cat] = null; persist(); applyCosmetics(); renderShop(); };
+    } else if (owned) {
+      btn.className = 'shop-buy equip'; btn.textContent = 'そうびする';
+      btn.onclick = () => { save.equipped[item.cat] = item.id; persist(); applyCosmetics(); renderShop(); };
+    } else {
+      btn.className = 'shop-buy' + (save.jewels >= item.price ? '' : ' cant'); btn.innerHTML = priceHTML;
+      btn.onclick = () => { if (!canPay()) return; save.owned.push(item.id); save.equipped[item.cat] = item.id; persist(); applyCosmetics(); renderShop(); };
+    }
   }
   card.appendChild(btn);
   return card;
 }
 function openShop() { renderShop(); showScreen('shop'); }
+
+/* ===========================================================
+   おたから図鑑（ずかん）
+   =========================================================== */
+function openZukan() {
+  const wrap = document.getElementById('zukanGrid');
+  wrap.innerHTML = '';
+  CAT_INFO.forEach(({ cat, title }) => {
+    const h = document.createElement('div'); h.className = 'zukan-cat'; h.textContent = title; wrap.appendChild(h);
+    const grid = document.createElement('div'); grid.className = 'zukan-row';
+    SHOP.filter(i => i.cat === cat).forEach(item => {
+      const cell = document.createElement('div'); cell.className = 'zukan-cell';
+      const unlocked = isUnlocked(item.id);
+      let ic;
+      if (item.img) { ic = document.createElement('img'); ic.className = 'zukan-ic'; ic.src = item.val; ic.alt = ''; }
+      else { ic = document.createElement('div'); ic.className = 'zukan-ic emoji'; ic.textContent = item.icon || item.emoji || '❓'; }
+      if (!unlocked) { ic.classList.add('locked'); if (!item.img) ic.textContent = '？'; }  // シルエット/？
+      cell.appendChild(ic);
+      const nm = document.createElement('div'); nm.className = 'zukan-name';
+      nm.textContent = unlocked ? item.name : '？？？';
+      cell.appendChild(nm);
+      grid.appendChild(cell);
+    });
+    wrap.appendChild(grid);
+  });
+  // コンプ率
+  const total = SHOP.length, got = SHOP.filter(i => isUnlocked(i.id)).length;
+  document.getElementById('zukanProgress').textContent = `${got} / ${total} コンプリート`;
+  document.getElementById('zukanModal').classList.add('show');
+}
+function closeZukan() { document.getElementById('zukanModal').classList.remove('show'); }
 
 const elQuestion  = document.getElementById('question');
 const elStageNum  = document.getElementById('stageNum');
@@ -2042,10 +2225,50 @@ function choose(side) {
       stage++;
       setTimeout(nextProblem, 350); // シームレスに次の問題へ
     }
+  } else if (armedShield) {
+    // --- ふたばシールドでミスを1回無効化 ---
+    armedShield = false;
+    updateActiveItems();
+    showShieldBlock();
+    if (stage >= TOTAL_STAGES) {
+      defeatBoss();
+      setTimeout(winGame, 1200);
+    } else {
+      stage++;
+      setTimeout(nextProblem, 700); // 守られて次へ
+    }
   } else {
     // --- 不正解：落下＆暗転 → ゲームオーバー ---
     gameOver('wrong');
   }
+}
+
+/* ふたばシールド発動演出 */
+function showShieldBlock() {
+  const st = document.querySelector('.play-stage');
+  if (st) {
+    const s = document.createElement('div');
+    s.className = 'shield-block';
+    s.innerHTML = '<div class="shield-ring"></div><div class="shield-text">🛡️ シールド！</div>';
+    st.appendChild(s);
+    setTimeout(() => s.remove(), 900);
+  }
+  if (audioCtx) { try {
+    const t = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(880, t); o.frequency.exponentialRampToValueAtTime(440, t + 0.25);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.3, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t + 0.42);
+  } catch (e) {} }
+}
+
+/* 使用中アイテムのアイコン表示 */
+function updateActiveItems() {
+  const c = document.getElementById('activeItems');
+  if (!c) return;
+  let h = '';
+  if (armedShield) h += '<span class="ai-icon">🛡️</span>';
+  if (armedDouble) h += '<span class="ai-icon">✨2×</span>';
+  c.innerHTML = h;
 }
 
 /* 失敗（不正解 or 時間切れ）→ 落下演出 → ゲームオーバー画面 */
@@ -2057,6 +2280,7 @@ function gameOver(reason) {
   showRocks();                 // 線路に岩が出て激突（減速）
   elPlay.classList.add('crash');
   awardJewels();   // 失敗でも、それまでに集めた宝石はジュエルになる
+  armedShield = false; armedDouble = false;  // 使用アイテムをリセット
   setTimeout(() => {
     elPlay.classList.remove('crash');
     // 石板に「正解の答え」を表示（学習のふりかえり）
@@ -2128,7 +2352,8 @@ function renderGemCollection() {
 function winGame() {
   clearTimers();
   stopBoss();
-  awardJewels();   // 集めた宝石をジュエルに換金
+  awardJewels();   // 集めた宝石をジュエルに換金（2倍チケット適用）
+  armedShield = false; armedDouble = false;  // 使用アイテムをリセット
   document.getElementById('clearTime').textContent = formatTime(totalTimeMs);
   renderGemCollection();
   showScreen('clear');
@@ -2147,6 +2372,7 @@ function startGame() {
   document.getElementById('gemCount').textContent = 0;
   updateJewelUI();                  // おさいふ残高を表示
   applyCosmetics();                 // 装備中のカスタマイズを反映
+  updateActiveItems();              // 使用中アイテムのアイコン
   elStageNum.textContent = 1;
   clearTimers();
   stopBoss();                       // ボスの状態をリセット
@@ -2156,16 +2382,60 @@ function startGame() {
   nextProblem();
 }
 
+/* プレイ開始の入口：消費アイテムがあれば選択モーダル、なければ即スタート */
+let itemArmSel = {};
+function beginGame() {
+  initAudio();
+  const hasItems = SHOP.some(i => i.cat === 'consumable' && itemCount(i.id) > 0);
+  if (hasItems) { openItemModal(); }
+  else { armedShield = false; armedDouble = false; startGame(); }
+}
+function openItemModal() {
+  itemArmSel = {};
+  const list = document.getElementById('itemArmList');
+  list.innerHTML = '';
+  SHOP.filter(i => i.cat === 'consumable' && itemCount(i.id) > 0).forEach(item => {
+    const row = document.createElement('button');
+    row.className = 'item-arm';
+    row.innerHTML = `<span class="ia-emoji">${item.emoji}</span>` +
+      `<span class="ia-info"><b>${item.name}</b><small>${item.desc}（もってる×${itemCount(item.id)}）</small></span>` +
+      `<span class="ia-toggle">OFF</span>`;
+    row.onclick = () => {
+      itemArmSel[item.id] = !itemArmSel[item.id];
+      row.classList.toggle('on', itemArmSel[item.id]);
+      row.querySelector('.ia-toggle').textContent = itemArmSel[item.id] ? 'ON' : 'OFF';
+    };
+    list.appendChild(row);
+  });
+  document.getElementById('itemModal').classList.add('show');
+}
+function confirmItemsAndStart() {
+  document.getElementById('itemModal').classList.remove('show');
+  armedShield = false; armedDouble = false;
+  Object.keys(itemArmSel).forEach(id => {
+    if (itemArmSel[id] && itemCount(id) > 0) {
+      save.items[id] = itemCount(id) - 1;     // 消費
+      if (id === 'item_shield') armedShield = true;
+      if (id === 'item_double') armedDouble = true;
+    }
+  });
+  persist();
+  startGame();
+}
+
 /* ===========================================================
    イベント登録
    =========================================================== */
-document.getElementById('startBtn').addEventListener('click', startGame);
-document.getElementById('retryBtn').addEventListener('click', startGame);
-document.getElementById('clearRetryBtn').addEventListener('click', startGame);
+document.getElementById('startBtn').addEventListener('click', beginGame);
+document.getElementById('retryBtn').addEventListener('click', beginGame);
+document.getElementById('clearRetryBtn').addEventListener('click', beginGame);
 document.getElementById('clearHomeBtn').addEventListener('click', () => showScreen('title'));
 document.getElementById('overHomeBtn').addEventListener('click', () => showScreen('title'));
 document.getElementById('shopBtn').addEventListener('click', openShop);
 document.getElementById('shopBackBtn').addEventListener('click', () => showScreen('title'));
+document.getElementById('zukanBtn').addEventListener('click', openZukan);
+document.getElementById('zukanCloseBtn').addEventListener('click', closeZukan);
+document.getElementById('itemStartBtn').addEventListener('click', confirmItemsAndStart);
 document.getElementById('zoneLeft').addEventListener('click', () => choose('left'));
 document.getElementById('zoneRight').addEventListener('click', () => choose('right'));
 
@@ -2180,6 +2450,7 @@ document.addEventListener('keydown', (e) => {
    最終ステージ（ラスボス P.O.C. OVERLORD）からスタートする */
 function jumpToBossIfRequested() {
   if (location.hash === '#boss') {
+    armedShield = false; armedDouble = false;
     startGame();
     stage = TOTAL_STAGES;
     score = TOTAL_STAGES - 1;
