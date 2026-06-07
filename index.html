@@ -1217,9 +1217,10 @@ html, body {
   transform: translateX(-50%);
   filter: drop-shadow(0 0.4cqw 0.5cqw rgba(0,0,0,.5));
 }
-.ship-mini  { left: 8.5%;  bottom: 43.5%; width: 8.5cqw; animation: miniBob 2.6s ease-in-out infinite; }
-.uni-mini   { left: 16%;   bottom: 43%;   width: 7.5cqw; animation: miniBob 2.9s ease-in-out -0.9s infinite; }
-.sword-mini { left: 24%;   bottom: 44%;   width: 10cqw; animation: miniBob 3.2s ease-in-out -1.5s infinite; }
+/* 棚の奥行き（右上へ後退）に沿って並べる：手前=大きく低く、奥=小さく高く */
+.ship-mini  { left: 7%;    bottom: 40%; width: 10cqw;  z-index: 8; animation: miniBob 2.6s ease-in-out infinite; }       /* 手前 */
+.uni-mini   { left: 13.5%; bottom: 45%; width: 8.5cqw; z-index: 7; animation: miniBob 2.9s ease-in-out -0.9s infinite; } /* 中 */
+.sword-mini { left: 20.5%; bottom: 49.5%; width: 9.5cqw; z-index: 6; animation: miniBob 3.2s ease-in-out -1.5s infinite; } /* 奥 */
 @keyframes miniBob {
   0%,100% { transform: translateX(-50%) translateY(0); }
   50%     { transform: translateX(-50%) translateY(-0.6cqw); }
