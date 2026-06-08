@@ -1338,15 +1338,26 @@ html, body {
 }
 /* アクセサリー：天井から吊るしてゆらゆら */
 .accessory {
-  position: absolute; left: 30%; top: 0;
-  z-index: 4; display: none; pointer-events: none;
+  position: absolute; right: 18%; left: auto; top: 0;
+  z-index: 6; display: none; pointer-events: none;
   transform-origin: 50% 0;
   animation: accSwing 3.2s ease-in-out infinite;
   text-align: center;
 }
-.acc-cord { display: block; width: 0.5cqw; height: 9cqw; margin: 0 auto; background: linear-gradient(#7a5a3a,#c9a26a); border-radius: 1cqw; }
+/* 天井から下がるチェーン風コード */
+.acc-cord {
+  display: block; width: 0.9cqw; height: 5cqw; margin: 0 auto;
+  background: repeating-linear-gradient(#caa46a 0 0.7cqw, #8a6a3a 0.7cqw 1.4cqw);
+  border-radius: 1cqw;
+}
 .acc-item { display: block; font-size: 7cqw; line-height: 1; margin-top: -0.5cqw; filter: drop-shadow(0 0.4cqw 0.4cqw rgba(0,0,0,.4)); }
+.acc-img  { display: none; width: 9cqw; height: auto; margin: -1.2cqw auto 0; filter: drop-shadow(0 0.5cqw 0.5cqw rgba(0,0,0,.4)); }
 .accessory.glow .acc-item { animation: accGlow 1.4s ease-in-out infinite; }
+.accessory.glow .acc-img  { animation: accGlowGreen 1.8s ease-in-out infinite; }
+@keyframes accGlowGreen {
+  0%,100% { filter: drop-shadow(0 0.4cqw 0.4cqw rgba(0,0,0,.4)) drop-shadow(0 0 0.6cqw rgba(120,255,150,.5)); }
+  50%     { filter: drop-shadow(0 0.4cqw 0.4cqw rgba(0,0,0,.4)) drop-shadow(0 0 2.4cqw rgba(140,255,170,1)); }
+}
 @keyframes accSwing { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
 @keyframes accGlow {
   0%,100% { filter: drop-shadow(0 0 0.6cqw rgba(255,200,80,.6)); }
@@ -1538,6 +1549,7 @@ html, body {
       <div class="accessory" id="accessory">
         <span class="acc-cord"></span>
         <span class="acc-item" id="accessoryItem"></span>
+        <img class="acc-img" id="accessoryImg" alt="" onerror="this.style.display='none'">
       </div>
       <img class="ship-mini" id="shipMini" src="spaceship.png" alt="">  <!-- スペース・ジュエル号の模型 -->
       <img class="uni-mini" id="uniMini" src="unicorn.png" alt="">      <!-- ユニコーンの模型 -->
@@ -1689,7 +1701,7 @@ const SHOP = [
   { id:'wheel_dragon',  cat:'parts', name:'伝説のドラゴンハンドル', price:500, img:true, val:'part_wheel_dragon_shop.png', src:'part_wheel_dragon.png', desc:'古代のドラゴンが宿るハンドル。魔力がみなぎるぞ！' },
   { id:'wheel_crystal', cat:'parts', name:'クリスタルのハンドル', price:500, icon:'💎', src:'part_wheel_crystal.png' },
   // 🏮 アクセサリー（天井から吊るしてゆらゆら）
-  { id:'lantern_glow', cat:'accessory', name:'光るランタン',     price:300, emoji:'🏮', glow:true },
+  { id:'lantern_glow', cat:'accessory', name:'光るランタン',     price:300, emoji:'🏮', glow:true, img:true, val:'part_acc_lantern.png', src:'part_acc_lantern.png', desc:'暗いトンネルも安心！やさしく光るランタン' },
   { id:'compass_gold', cat:'accessory', name:'ゆらゆら羅針盤',   price:250, emoji:'🧭' },
   // 🎒 おたすけアイテム（消費・複数所持）
   { id:'item_shield', cat:'consumable', name:'ふたばシールド',       price:200, emoji:'🛡️', desc:'1かいミスしても とまらない' },
@@ -1755,8 +1767,17 @@ function applyCosmetics() {
   // アクセサリー（天井から吊り下げ・ゆらゆら）
   const acc = find(eq.accessory);
   const ah = document.getElementById('accessory');
-  if (acc) { document.getElementById('accessoryItem').textContent = acc.emoji; ah.classList.toggle('glow', !!acc.glow); ah.style.display = 'block'; }
-  else ah.style.display = 'none';
+  const aimg = document.getElementById('accessoryImg');
+  const aitem = document.getElementById('accessoryItem');
+  if (acc) {
+    if (acc.src) {                       // 画像アクセサリー
+      if (aimg.getAttribute('src') !== acc.src) { aimg.src = acc.src; }
+      aimg.style.display = 'block'; aitem.style.display = 'none';
+    } else {                             // 絵文字アクセサリー
+      aitem.textContent = acc.emoji; aitem.style.display = 'block'; aimg.style.display = 'none';
+    }
+    ah.classList.toggle('glow', !!acc.glow); ah.style.display = 'block';
+  } else ah.style.display = 'none';
   // 特別景品の模型（買ったら常に表示。並べて飾る）
   document.getElementById('shipMini').style.display = save.owned.includes('ship_special') ? 'block' : 'none';
   document.getElementById('uniMini').style.display  = save.owned.includes('unicorn_special') ? 'block' : 'none';
