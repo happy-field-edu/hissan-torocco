@@ -1386,6 +1386,11 @@ html, body {
   box-shadow: 0 3px 0 rgba(0,0,0,.25);
 }
 .ai-icon.used { filter: grayscale(1); opacity: .38; }   /* 使用済み＝グレーアウト */
+.ai-img {
+  height: clamp(30px,5vw,46px); width: auto; border-radius: 10px;
+  box-shadow: 0 3px 0 rgba(0,0,0,.25), 0 0 10px rgba(255,220,120,.7);
+  vertical-align: middle;
+}
 
 /* ふたばシールド発動演出：コックピット全体を緑のバリアが包む */
 .shield-block { position: absolute; inset: 0; z-index: 9; pointer-events: none; overflow: hidden; }
@@ -1748,7 +1753,7 @@ const SHOP = [
   { id:'compass_yurayura', cat:'accessory', name:'ゆらゆら羅針盤', price:400, emoji:'🧭', glow:'rainbow', img:true, val:'part_acc_compass_shop.png', src:'part_acc_compass.png', desc:'コックピットでゆらゆら動く魔法の羅針盤！冒険がもっと楽しくなるぞ！' },
   // 🎒 おたすけアイテム（消費・複数所持）
   { id:'item_shield', cat:'consumable', name:'ふたばシールド',       price:200, emoji:'🛡️', img:true, val:'item_shield.png', desc:'1回だけ、まちがえても大じょうぶ！岩のぶつかるのを防ぐよ' },
-  { id:'item_double', cat:'consumable', name:'ジュエル2ばいチケット', price:500, emoji:'✨', desc:'もらえるジュエルが2ばい' },
+  { id:'item_double', cat:'consumable', name:'ジュエル2ばいチケット', price:600, emoji:'✨', img:true, val:'item_double.png', desc:'つぎのプレイで、ジュエルがぜんぶ2ばいになるよ！たくさんかせぐぞ！' },
 ];
 const CAT_INFO = [
   { cat:'special',    title:'🌟 とくべつ景品（レア）' },
@@ -2377,7 +2382,7 @@ function updateActiveItems() {
   let h = '';
   if (armedShield)      h += '<span class="ai-icon">🛡️</span>';
   else if (shieldUsed)  h += '<span class="ai-icon used">🛡️</span>'; // 使用済み＝グレーアウト
-  if (armedDouble) h += '<span class="ai-icon">✨2×</span>';
+  if (armedDouble) h += '<img class="ai-img" src="item_double_x2.png" alt="×2" onerror="this.outerHTML=\'<span class=&quot;ai-icon&quot;>✨2×</span>\'">';
   c.innerHTML = h;
 }
 
