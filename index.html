@@ -1606,6 +1606,133 @@ html, body {
 .review-perfect { text-align:center; color:#fff; padding:24px 12px; }
 .review-perfect .big { font-size:clamp(30px,7vw,52px); font-weight:900; color:#ffe14d; text-shadow:0 3px 0 #a8331f; }
 .review-perfect .sub { font-size:clamp(15px,3vw,22px); font-weight:800; margin-top:8px; }
+
+/* ===========================================================
+   伝説のナビゲーターフィギュア（棚に飾る・星と歯車がまわる）
+   =========================================================== */
+.figure-shelf {
+  position: absolute; left: 12%; bottom: 43%; width: 14cqw;
+  transform: translateX(-50%); z-index: 9; display: none; pointer-events: none;
+  animation: miniBob 3s ease-in-out infinite;
+}
+.figure-img { width: 100%; height: auto; display: block; filter: drop-shadow(0 0.5cqw 0.6cqw rgba(0,0,0,.5)); }
+.fig-orbit {
+  position: absolute; left: 50%; top: 42%; width: 3cqw; height: 3cqw; margin: -1.5cqw;
+  font-size: 2.4cqw; line-height: 3cqw; text-align: center;
+  animation: figOrbit 7s linear infinite, figTwinkle 1.6s ease-in-out infinite;
+}
+.fo1 { --r: 8.5cqw; animation-duration: 7s, 1.6s; }
+.fo2 { --r: 6.5cqw; animation-duration: 9s, 1.9s; animation-delay: -3s, -.5s; }
+.fo3 { --r: 9.5cqw; animation-duration: 6s, 1.4s; animation-delay: -1.5s, -.9s; }
+@keyframes figOrbit {
+  from { transform: rotate(0deg)   translateX(var(--r,8cqw)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--r,8cqw)) rotate(-360deg); }
+}
+@keyframes figTwinkle { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+/* フィーバー中はフィギュアが虹色に脈打つ */
+#playScreen.fever .figure-img { animation: figFever .8s ease-in-out infinite; }
+@keyframes figFever {
+  0%,100% { filter: drop-shadow(0 0 1.4cqw rgba(255,90,120,.95)); }
+  33%     { filter: drop-shadow(0 0 1.8cqw rgba(110,255,150,.95)); }
+  66%     { filter: drop-shadow(0 0 1.8cqw rgba(120,170,255,.95)); }
+}
+
+/* ===========================================================
+   ふたばフィーバー：虹色キラキラ演出（四隅）
+   =========================================================== */
+.fever-fx { position: absolute; inset: 0; z-index: 9; pointer-events: none; display: none; }
+#playScreen.fever .fever-fx { display: block; }
+#playScreen.fever .play-stage { box-shadow: inset 0 0 6cqw rgba(255,255,255,.25); }
+.ff {
+  position: absolute; width: 30cqw; height: 30cqw; border-radius: 50%;
+  background: radial-gradient(circle at center,
+    rgba(255,120,200,.0) 28%, rgba(120,200,255,.34) 55%, rgba(255,230,120,.28) 68%, rgba(180,120,255,0) 80%);
+  mix-blend-mode: screen; animation: ffPulse 1.6s ease-in-out infinite;
+}
+.ff.c1 { top: -8cqw; left: -8cqw; }
+.ff.c2 { top: -8cqw; right: -8cqw; animation-delay: -.4s; }
+.ff.c3 { bottom: -8cqw; left: -8cqw; animation-delay: -.8s; }
+.ff.c4 { bottom: -8cqw; right: -8cqw; animation-delay: -1.2s; }
+@keyframes ffPulse {
+  0%,100% { opacity: .45; transform: scale(.85) rotate(0deg); filter: hue-rotate(0deg); }
+  50%     { opacity: 1;   transform: scale(1.15) rotate(40deg); filter: hue-rotate(180deg); }
+}
+/* フィーバー開始バナー */
+.fever-banner {
+  position: absolute; left: 50%; top: 30%; transform: translate(-50%,-50%) scale(0);
+  z-index: 12; pointer-events: none; white-space: nowrap;
+  font-size: 8cqw; font-weight: 900; color: #fff;
+  -webkit-text-stroke: 0.5cqw #b15dff;
+  background: linear-gradient(90deg,#ff5d6c,#ffd24d,#7dff9b,#5dc8ff,#b15dff);
+  -webkit-background-clip: text; background-clip: text;
+  text-shadow: 0 0 3cqw rgba(255,255,255,.6);
+  animation: feverBanner 1.8s ease-out forwards;
+}
+@keyframes feverBanner {
+  0%   { transform: translate(-50%,-50%) scale(0)   rotate(-8deg); opacity: 0; }
+  25%  { transform: translate(-50%,-50%) scale(1.15) rotate(2deg); opacity: 1; }
+  70%  { transform: translate(-50%,-50%) scale(1)    rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%,-70%) scale(1)    rotate(0deg); opacity: 0; }
+}
+
+/* ===========================================================
+   虹色ダイヤモンド ＆ スコアポップ
+   =========================================================== */
+.gem-diamond {
+  display: inline-block; width: var(--gs,28px); height: var(--gs,28px);
+  background: conic-gradient(from 0deg, #ff5d6c, #ffd24d, #7dff9b, #5dc8ff, #b15dff, #ff5d6c);
+  clip-path: polygon(50% 0, 100% 38%, 50% 100%, 0 38%);
+  filter: drop-shadow(0 0 4px rgba(255,255,255,.9));
+  animation: diaShine 2s linear infinite;
+}
+@keyframes diaShine { to { filter: drop-shadow(0 0 7px rgba(255,255,255,.95)) hue-rotate(360deg); } }
+.score-pop {
+  position: fixed; z-index: 65; pointer-events: none; font-weight: 900;
+  font-size: clamp(30px,7vw,60px); white-space: nowrap;
+  background: linear-gradient(90deg,#ff5d6c,#ffd24d,#7dff9b,#5dc8ff,#b15dff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,.9);
+  text-shadow: 0 4px 12px rgba(0,0,0,.4);
+  animation: scorePop 1s ease-out forwards;
+}
+@keyframes scorePop {
+  0%   { transform: translate(-50%,0) scale(.4); opacity: 0; }
+  25%  { transform: translate(-50%,-18px) scale(1.25); opacity: 1; }
+  100% { transform: translate(-50%,-86px) scale(1); opacity: 0; }
+}
+
+/* ===========================================================
+   フィギュア解放：虹色の紙吹雪＆特別ポップアップ
+   =========================================================== */
+.confetti { position: absolute; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
+.confetti i {
+  position: absolute; top: -6%; width: 0.9cqw; height: 1.5cqw; border-radius: 2px;
+  opacity: .95; animation: confFall linear forwards;
+}
+@keyframes confFall { to { transform: translateY(120vh) rotate(900deg); } }
+.unlock-pop {
+  position: absolute; inset: 0; z-index: 82; display: flex; align-items: center; justify-content: center;
+  background: rgba(10,6,24,.45);
+}
+.unlock-box {
+  position: relative; background: linear-gradient(180deg,#2a1b4a,#3a2570);
+  border: 5px solid #ffe14d; border-radius: 26px; padding: 22px 28px 26px; text-align: center;
+  max-width: 86%; box-shadow: 0 16px 50px rgba(0,0,0,.6);
+  animation: unlockPop .6s cubic-bezier(.2,1.6,.4,1) both;
+}
+.unlock-box::before {
+  content: ""; position: absolute; inset: -8px; border-radius: 30px; z-index: -1;
+  background: conic-gradient(from 0deg,#ff5d6c,#ffd24d,#7dff9b,#5dc8ff,#b15dff,#ff5d6c);
+  filter: blur(8px); opacity: .8; animation: diaShine 3s linear infinite;
+}
+@keyframes unlockPop { 0% { transform: scale(0) rotate(-6deg); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.unlock-box img { width: clamp(130px,30vw,240px); height: auto; filter: drop-shadow(0 0 18px rgba(255,255,255,.6)); }
+.unlock-title {
+  font-size: clamp(20px,4.4vw,34px); font-weight: 900; color: #ffe14d;
+  text-shadow: 0 3px 0 #a8331f; margin: 6px 0 4px;
+}
+.unlock-sub { font-size: clamp(13px,2.8vw,18px); color: #e7dcff; font-weight: 700; }
+.unlock-close { margin-top: 14px; background:#34c759; box-shadow:0 7px 0 #1f8c3c, 0 10px 22px rgba(0,0,0,.4); pointer-events: auto; }
 </style>
 </head>
 <body>
@@ -1742,6 +1869,18 @@ html, body {
       <img class="ship-mini" id="shipMini" src="spaceship.png" alt="">  <!-- スペース・ジュエル号の模型 -->
       <img class="uni-mini" id="uniMini" src="unicorn.png" alt="">      <!-- ユニコーンの模型 -->
       <img class="sword-mini" id="swordMini" src="sword.png" alt="">   <!-- 伝説の剣 -->
+      <!-- 伝説のナビゲーターフィギュア（棚に飾る・星と歯車がまわる） -->
+      <div class="figure-shelf" id="figureNavigator">
+        <img class="figure-img" src="figure_navigator.png" alt="" onerror="this.style.display='none'">
+        <span class="fig-orbit fo1">⭐</span>
+        <span class="fig-orbit fo2">⚙️</span>
+        <span class="fig-orbit fo3">✨</span>
+      </div>
+      <!-- ふたばフィーバー：虹色キラキラ（四隅） -->
+      <div class="fever-fx" id="feverFx" aria-hidden="true">
+        <span class="ff c1"></span><span class="ff c2"></span>
+        <span class="ff c3"></span><span class="ff c4"></span>
+      </div>
     </div>
 
 
@@ -1873,7 +2012,16 @@ const GEMS = [
   { key:'amethyst', color:'#b15dff' },
 ];
 let gemCounts = {};     // 種類ごとの獲得数
-let gemTotal = 0;       // 合計獲得数
+let gemTotal = 0;       // 通常宝石の合計獲得数
+let rainbowCount = 0;   // ふたばフィーバーで集めた虹色ダイヤモンドの数（1個=100ジュエル）
+
+/* ふたばフィーバー（ナビゲーターフィギュア装備時の特別ギミック） */
+let feverActive = false;
+let feverTimerId = null;
+const FEVER_MS = 15000;          // 15秒間
+const FEVER_CHANCE = 0.25;       // 正解ごとの発動確率
+const RAINBOW_VALUE = 100;       // 虹色ダイヤ1個 = 100ジュエル
+function figureEquipped() { return save.equipped.parts === 'figure_navigator'; }
 
 /* ===========================================================
    ジュエル経済・ショップ（localStorageに保存）
@@ -1890,6 +2038,7 @@ const SHOP = [
   // 🛠️ カスタムパーツ（ハンドルに透過PNGを重ねる。画像は後日追加）
   { id:'wheel_dragon',  cat:'parts', name:'伝説のドラゴンハンドル', price:500, img:true, val:'part_wheel_dragon_shop.png', src:'part_wheel_dragon.png', desc:'古代のドラゴンが宿るハンドル。魔力がみなぎるぞ！', gemX:51, gemY:55.4, gemColor:'green' },
   { id:'wheel_crystal', cat:'parts', name:'伝説のクリスタルハンドル', price:500, img:true, val:'part_wheel_crystal_shop.png', src:'part_wheel_crystal.png', desc:'虹色に輝くクリスタルのハンドル。魔力の光が冒険を照らすぞ！', gemX:50, gemY:51, gemColor:'rainbow', shimmer:true },
+  { id:'figure_navigator', cat:'parts', name:'伝説のナビゲーターフィギュア', price:0, img:true, val:'figure_navigator.png', src:'figure_navigator.png', desc:'ふたばシールドでパーフェクトを3回つづけた者だけが手にできる、まぼろしのフィギュア！「ふたばフィーバー」で虹色ダイヤがふってくる！', secret:true, shelf:true },
   // 🏮 アクセサリー（天井から吊るしてゆらゆら）
   { id:'lantern_glow',     cat:'accessory', name:'光るランタン',   price:300, emoji:'🏮', glow:'green',   img:true, val:'part_acc_lantern.png',  src:'part_acc_lantern.png',  desc:'暗いトンネルも安心！やさしく光るランタン' },
   { id:'compass_yurayura', cat:'accessory', name:'ゆらゆら羅針盤', price:400, emoji:'🧭', glow:'rainbow', img:true, val:'part_acc_compass_shop.png', src:'part_acc_compass.png', desc:'コックピットでゆらゆら動く魔法の羅針盤！冒険がもっと楽しくなるぞ！' },
@@ -1905,7 +2054,7 @@ const CAT_INFO = [
 ];
 
 function loadSave() {
-  const def = { jewels:0, owned:[], equipped:{ parts:null, accessory:null }, items:{}, seen:[], themes:[], theme:null };
+  const def = { jewels:0, owned:[], equipped:{ parts:null, accessory:null }, items:{}, seen:[], themes:[], theme:null, consecutiveShieldPerfects:0 };
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
     return {
@@ -1916,6 +2065,7 @@ function loadSave() {
       seen: Array.isArray(s.seen) ? s.seen : [],                        // 図鑑：一度でも入手したID
       themes: Array.isArray(s.themes) ? s.themes : [],                  // 合言葉で解放した背景テーマ
       theme: s.theme || null,                                           // 現在えらんでいる背景テーマ
+      consecutiveShieldPerfects: s.consecutiveShieldPerfects || 0,      // シールド装備パーフェクト連続回数（隠し解放用）
     };
   } catch (e) { return def; }
 }
@@ -1994,7 +2144,9 @@ function submitSecret() {
 let armedShield = false;   // ふたばシールド：装備中（まだ未使用）
 let armedDouble = false;   // ジュエル2倍：装備中
 let shieldUsed  = false;   // このプレイ中にシールドを使ったか（=終了時に1個消費）
+let shieldEquippedThisGame = false; // このプレイでシールドを装備したか（隠し解放判定用）
 let wrongList   = [];      // このプレイで間違えた問題 [{a,b,answer}]
+let figureJustUnlocked = false;     // 今回のクリアでフィギュアを解放したか
 
 function itemCount(id) { return save.items[id] || 0; }
 function markSeen(id) { if (!save.seen.includes(id)) save.seen.push(id); }
@@ -2006,8 +2158,8 @@ function updateJewelUI() {
 }
 /* ランの宝石をジュエルに換金して保存（2倍チケット適用） */
 function awardJewels() {
-  if (gemTotal > 0) {
-    let g = gemTotal * JEWELS_PER_GEM;
+  let g = gemTotal * JEWELS_PER_GEM + rainbowCount * RAINBOW_VALUE; // 虹色ダイヤは1個100ジュエル
+  if (g > 0) {
     if (armedDouble) g *= 2;             // ジュエル2倍チケット
     save.jewels += g; persist(); updateJewelUI();
   }
@@ -2021,7 +2173,12 @@ function applyCosmetics() {
   const po = document.getElementById('partOverlay');
   const pimg = document.getElementById('partImg');
   const pgem = document.getElementById('partGem');
-  if (part && part.src) {
+  // 棚に飾るタイプのパーツ（ナビゲーターフィギュア）はハンドルに重ねず、左の棚に置く
+  const figEl = document.getElementById('figureNavigator');
+  if (figEl) figEl.style.display = (part && part.shelf) ? 'block' : 'none';
+  if (part && part.shelf) {
+    po.style.display = 'none';                 // ハンドルには重ねない
+  } else if (part && part.src) {
     if (pimg.getAttribute('src') !== part.src) { pimg.src = part.src; pimg.style.display = 'block'; }
     if (part.gemX != null) {
       pgem.style.left = part.gemX + '%';
@@ -2117,6 +2274,20 @@ function renderShop() {
 function makeShopCard(item) {
   const card = document.createElement('div');
   card.className = 'shop-card' + (item.cat === 'special' ? ' featured' : '');
+  const ownedNow = save.owned.includes(item.id);
+  // 隠しアイテム（未解放）：？？？の黒シルエットで表示し、購入不可
+  if (item.secret && !ownedNow) {
+    const sil = document.createElement('img');
+    sil.className = 'shop-img'; sil.style.filter = 'brightness(0) opacity(.5)'; sil.src = item.val; sil.alt = '';
+    card.appendChild(sil);
+    const nm = document.createElement('div'); nm.className = 'shop-name'; nm.textContent = '？？？';
+    card.appendChild(nm);
+    const d = document.createElement('div'); d.className = 'shop-desc'; d.textContent = 'なぞの じょうけんで てにはいる…';
+    card.appendChild(d);
+    const lb = document.createElement('button'); lb.className = 'shop-buy cant'; lb.textContent = '🔒 ひみつ';
+    lb.disabled = true; card.appendChild(lb);
+    return card;
+  }
   // アイコン（画像 or 絵文字）
   let icon;
   if (item.img) {
@@ -2542,9 +2713,10 @@ function choose(side) {
     totalTimeMs += performance.now() - qStartAt; // この問にかかった時間を合計に加える
     score++;
     elPlay.style.setProperty('--combo', Math.min(score, 10)); // 速度計の針＆蒸気を強める
-    collectGem();                                             // 宝石を1つ集める
+    collectGem();                                             // 宝石（フィーバー中は虹色ダイヤ）を1つ集める
     blastObstacle();                                          // 岩を大砲でドカン！と破壊
     if (save.owned.includes('sword_special')) swordSlash();   // 剣を持っていたら斬撃エフェクト
+    maybeStartFever();                                        // フィギュア装備中は確率で「ふたばフィーバー」発動
     elFlash.classList.add('show');
     setTimeout(() => elFlash.classList.remove('show'), 450);
 
@@ -2624,12 +2796,14 @@ function gameOver(reason) {
   clearInterval(bossAttackId); // ボスの攻撃を止める
   bossAttackId = null;
   elTimerBar.style.transition = 'none'; // タイマーバーを止める
+  endFever();
   if (reason === 'timeup') recordWrong();    // 時間切れも「まちがえた問題」として記録
   renderReview();                            // ふりかえりUIを更新
   showRocks();                 // 岩が手前に急拡大→激突（シェイク＋土煙はインパクト時に発動）
   awardJewels();   // 失敗でも、それまでに集めた宝石はジュエルになる
   consumeUsedItems();                        // 使ったアイテムを所持数から減らす
-  armedShield = false; armedDouble = false; shieldUsed = false;  // 使用アイテムをリセット
+  save.consecutiveShieldPerfects = 0; persist();   // ゲームオーバーで連続記録リセット
+  armedShield = false; armedDouble = false; shieldUsed = false; shieldEquippedThisGame = false;
   setTimeout(() => {
     elPlay.classList.remove('crash');
     // 石板に「正解の答え」を表示（学習のふりかえり）
@@ -2657,36 +2831,62 @@ function formatTime(ms) {
    =========================================================== */
 /* 正解時：線路の宝石が1つ飛んできてカウンターに集まる */
 function collectGem() {
-  const gem = GEMS[Math.floor(Math.random() * GEMS.length)];
+  const rainbow = feverActive;   // フィーバー中は虹色ダイヤモンドだけが落ちる
   const el = document.createElement('div');
-  el.className = 'gem fly-gem';
-  el.style.setProperty('--gc', gem.color);
-  el.style.setProperty('--gs', '42px');
+  el.className = rainbow ? 'gem-diamond fly-gem' : 'gem fly-gem';
+  if (!rainbow) { const gem = GEMS[Math.floor(Math.random() * GEMS.length)]; el.style.setProperty('--gc', gem.color); el._gem = gem; }
+  el.style.setProperty('--gs', rainbow ? '54px' : '42px');
   document.body.appendChild(el);
   const t = document.getElementById('gemCount').getBoundingClientRect();
   const tx = t.left + t.width / 2, ty = t.top + t.height / 2;
   const sx = window.innerWidth * 0.5, sy = window.innerHeight * 0.45;
-  el.style.left = (sx - 21) + 'px';
-  el.style.top  = (sy - 21) + 'px';
+  const half = rainbow ? 27 : 21;
+  el.style.left = (sx - half) + 'px';
+  el.style.top  = (sy - half) + 'px';
   const anim = el.animate([
     { transform: 'translate(0,0) scale(1.6) rotate(0deg)', opacity: 0 },
     { transform: 'translate(0,0) scale(1.6) rotate(0deg)', opacity: 1, offset: .18 },
     { transform: `translate(${tx - sx}px, ${ty - sy}px) scale(.5) rotate(280deg)`, opacity: .95 }
   ], { duration: 700, easing: 'cubic-bezier(.5,0,.6,1)' });
-  anim.onfinish = () => { el.remove(); registerGem(gem); };
+  anim.onfinish = () => { el.remove(); rainbow ? registerRainbow() : registerGem(el._gem); };
+  if (rainbow) showScorePop('+' + RAINBOW_VALUE, sx, sy - 40);   // 虹色グラデで「+100」
 }
-/* 獲得を記録してカウンター更新 */
+/* 通常宝石を記録してカウンター更新 */
 function registerGem(gem) {
   gemCounts[gem.key] = (gemCounts[gem.key] || 0) + 1;
   gemTotal++;
-  document.getElementById('gemCount').textContent = gemTotal;
+  updateGemCount();
+}
+/* 虹色ダイヤモンドを記録 */
+function registerRainbow() {
+  rainbowCount++;
+  updateGemCount();
+}
+function updateGemCount() {
+  document.getElementById('gemCount').textContent = gemTotal + rainbowCount;
   const hud = document.querySelector('.gem-hud');
   hud.classList.remove('pop'); void hud.offsetWidth; hud.classList.add('pop');
+}
+/* 虹色グラデーションの「+100」ポップアップ */
+function showScorePop(text, x, y) {
+  const p = document.createElement('div');
+  p.className = 'score-pop';
+  p.textContent = text;
+  p.style.left = x + 'px';
+  p.style.top  = y + 'px';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 1000);
 }
 /* クリア画面：集めた宝石の種類と数を表示 */
 function renderGemCollection() {
   const wrap = document.getElementById('clearGems');
   wrap.innerHTML = '';
+  if (rainbowCount) {
+    const item = document.createElement('div');
+    item.className = 'gem-item';
+    item.innerHTML = `<span class="gem-diamond" style="--gs:3.6cqw"></span>×${rainbowCount}`;
+    wrap.appendChild(item);
+  }
   GEMS.forEach(g => {
     if (gemCounts[g.key]) {
       const item = document.createElement('div');
@@ -2697,17 +2897,101 @@ function renderGemCollection() {
   });
 }
 
+/* ===========================================================
+   ふたばフィーバー（ナビゲーターフィギュア装備時の特別ギミック）
+   =========================================================== */
+function maybeStartFever() {
+  if (!figureEquipped() || feverActive) return;
+  if (Math.random() < FEVER_CHANCE) startFever();
+}
+function startFever() {
+  feverActive = true;
+  elPlay.classList.add('fever');
+  // 「ふたばフィーバー！」バナー
+  const stage = document.querySelector('.play-stage');
+  if (stage) {
+    const b = document.createElement('div');
+    b.className = 'fever-banner';
+    b.textContent = '🌈 ふたばフィーバー！';
+    stage.appendChild(b);
+    setTimeout(() => b.remove(), 1800);
+  }
+  playFanfare();
+  clearTimeout(feverTimerId);
+  feverTimerId = setTimeout(endFever, FEVER_MS);
+}
+function endFever() {
+  feverActive = false;
+  clearTimeout(feverTimerId); feverTimerId = null;
+  elPlay.classList.remove('fever');
+}
+
 /* 全問クリア */
 function winGame() {
   clearTimers();
+  endFever();
   stopBoss();
   awardJewels();   // 集めた宝石をジュエルに換金（2倍チケット適用）
   consumeUsedItems();                        // 使ったアイテムを所持数から減らす
-  armedShield = false; armedDouble = false; shieldUsed = false;  // 使用アイテムをリセット
+  checkFigureUnlock();                        // 隠しフィギュアの解放判定（armedをリセットする前に）
+  armedShield = false; armedDouble = false; shieldUsed = false; shieldEquippedThisGame = false;
   document.getElementById('clearTime').textContent = formatTime(totalTimeMs);
   renderGemCollection();
   renderReview();                            // ふりかえりUIを更新（パーフェクト判定）
   showScreen('clear');
+  if (figureJustUnlocked) { figureJustUnlocked = false; setTimeout(showFigureUnlock, 500); }
+}
+
+/* 隠しフィギュア解放判定：シールド装備＋パーフェクトを3回連続 */
+function checkFigureUnlock() {
+  const perfect = (wrongList.length === 0);
+  if (shieldEquippedThisGame && perfect) {
+    save.consecutiveShieldPerfects = (save.consecutiveShieldPerfects || 0) + 1;
+    if (save.consecutiveShieldPerfects >= 3 && !save.owned.includes('figure_navigator')) {
+      save.owned.push('figure_navigator');
+      markSeen('figure_navigator');
+      figureJustUnlocked = true;
+    }
+  } else {
+    save.consecutiveShieldPerfects = 0;   // ミス・シールド未装備なら連続記録リセット
+  }
+  persist();
+}
+
+/* フィギュア解放演出：虹色の紙吹雪＋特別ポップアップ */
+function showFigureUnlock() {
+  rainbowConfetti();
+  const stage = document.querySelector('#clearScreen .clear-stage') || document.getElementById('clearScreen');
+  const pop = document.createElement('div');
+  pop.className = 'unlock-pop';
+  pop.innerHTML =
+    '<div class="unlock-box">' +
+    '<img src="figure_navigator.png" alt="">' +
+    '<div class="unlock-title">🎉 大成功！</div>' +
+    '<div class="unlock-sub">福田先生のまほうのフィギュアを てにいれた！</div>' +
+    '<button class="big-btn unlock-close" id="unlockCloseBtn">やったー！</button>' +
+    '</div>';
+  document.getElementById('clearScreen').appendChild(pop);
+  playFanfare();
+  pop.querySelector('#unlockCloseBtn').onclick = () => pop.remove();
+}
+
+/* 画面全体に虹色の紙吹雪を降らせる */
+function rainbowConfetti() {
+  const cols = ['#ff5d6c','#ffd24d','#7dff9b','#5dc8ff','#b15dff','#ff9ad2'];
+  const layer = document.createElement('div');
+  layer.className = 'confetti';
+  for (let i = 0; i < 80; i++) {
+    const c = document.createElement('i');
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = cols[i % cols.length];
+    c.style.animationDuration = (1.8 + Math.random() * 1.8) + 's';
+    c.style.animationDelay = (Math.random() * 0.8) + 's';
+    c.style.transform = `rotate(${Math.random() * 360}deg)`;
+    layer.appendChild(c);
+  }
+  document.getElementById('clearScreen').appendChild(layer);
+  setTimeout(() => layer.remove(), 4200);
 }
 
 /* ===========================================================
@@ -2757,7 +3041,8 @@ function startGame() {
   totalTimeMs = 0;                  // タイムをリセット
   wrongList = [];                   // ふりかえり（間違えた問題）をリセット
   elPlay.style.setProperty('--combo', 0); // コンボ演出リセット
-  gemCounts = {}; gemTotal = 0;     // 宝石コレクションをリセット
+  gemCounts = {}; gemTotal = 0; rainbowCount = 0;  // 宝石コレクションをリセット
+  endFever();                       // フィーバー状態をリセット
   document.getElementById('gemCount').textContent = 0;
   updateJewelUI();                  // おさいふ残高を表示
   applyCosmetics();                 // 装備中のカスタマイズを反映
@@ -2777,7 +3062,7 @@ function beginGame() {
   initAudio();
   const hasItems = SHOP.some(i => i.cat === 'consumable' && itemCount(i.id) > 0);
   if (hasItems) { openItemModal(); }
-  else { armedShield = false; armedDouble = false; shieldUsed = false; startGame(); }
+  else { armedShield = false; armedDouble = false; shieldUsed = false; shieldEquippedThisGame = false; startGame(); }
 }
 function openItemModal() {
   itemArmSel = {};
@@ -2803,6 +3088,7 @@ function confirmItemsAndStart() {
   // 装備だけ決める（消費はプレイ終了時に行う）
   armedShield = !!(itemArmSel['item_shield'] && itemCount('item_shield') > 0);
   armedDouble = !!(itemArmSel['item_double'] && itemCount('item_double') > 0);
+  shieldEquippedThisGame = armedShield;   // 隠し解放判定用：このプレイでシールドを装備したか
   shieldUsed = false;
   startGame();
 }
@@ -2850,7 +3136,7 @@ document.addEventListener('keydown', (e) => {
    最終ステージ（ラスボス P.O.C. OVERLORD）からスタートする */
 function jumpToBossIfRequested() {
   if (location.hash === '#boss') {
-    armedShield = false; armedDouble = false; shieldUsed = false;
+    armedShield = false; armedDouble = false; shieldUsed = false; shieldEquippedThisGame = false;
     startGame();
     stage = TOTAL_STAGES;
     score = TOTAL_STAGES - 1;
