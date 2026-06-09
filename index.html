@@ -1953,6 +1953,53 @@ html, body {
 .kp-enter { color: #fff; background: linear-gradient(180deg,#52d96f,#2a9c4f); box-shadow: 0 4px 0 #1f7a3d; font-size: clamp(16px,3.6vw,22px); }
 .kp-del:active   { box-shadow: 0 1px 0 #a8431f; }
 .kp-enter:active { box-shadow: 0 1px 0 #1f7a3d; }
+
+/* ===========================================================
+   九九モード：歯車ボタン・呪文・段解放ポップ
+   =========================================================== */
+.kuku-gear {
+  position: absolute; top: 14px; right: 14px; z-index: 12;
+  width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(20,12,34,.55); color: #fff; font-size: 26px; line-height: 1;
+  box-shadow: 0 4px 0 rgba(0,0,0,.3);
+  animation: gearSpin 6s linear infinite;
+}
+.kuku-gear:active { transform: scale(.92); }
+@keyframes gearSpin { to { transform: rotate(360deg); } }
+.kuku-stages { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 6px 0 2px; }
+.kuku-chip {
+  font-size: clamp(11px,2.3vw,15px); font-weight: 800; color: #bda6e6;
+  background: rgba(255,255,255,.12); border: 2px solid #6a5a8a; border-radius: 999px; padding: 4px 10px;
+}
+.kuku-chip.got { color: #2a2050; background: #ffe14d; border-color: #ffd700; }
+/* 出題ジャンルカードの枠色 */
+.mode-card[data-subject="subtraction"] { border-color: #46c6e6; }
+.mode-card[data-subject="multiply"]    { border-color: #ff9f43; }
+/* 「○の段が かいほうされた！」大ポップアップ */
+.kuku-unlock {
+  position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center;
+  background: rgba(10,6,24,.6); pointer-events: auto;
+}
+.kuku-unlock-box {
+  position: relative; text-align: center; color: #fff;
+  background: linear-gradient(135deg,#3a1d6e,#5a2a8a,#2a4d8a,#2a8a6a,#6a2a8a);
+  background-size: 400% 400%; animation: figBg 8s ease infinite, unlockPop .6s cubic-bezier(.2,1.6,.4,1) both;
+  border: 5px solid #ffd700; border-radius: 28px; padding: 26px 34px 30px; max-width: 86%;
+  box-shadow: 0 18px 60px rgba(0,0,0,.7);
+}
+.kuku-unlock-box::before {
+  content:""; position:absolute; inset:-8px; border-radius:32px; z-index:-1;
+  background: conic-gradient(from 0deg,#ff5d6c,#ffd24d,#7dff9b,#5dc8ff,#b15dff,#ff5d6c);
+  filter: blur(10px); opacity:.75; animation: diaShine 3s linear infinite;
+}
+.ku-burst { font-size: clamp(34px,8vw,56px); }
+.ku-dan {
+  font-size: clamp(64px,18vw,130px); font-weight: 900; line-height: 1; color: #ffe14d;
+  -webkit-text-stroke: 3px #a8331f; text-shadow: 0 0 24px rgba(255,225,77,.8);
+}
+.ku-title { font-size: clamp(22px,5vw,38px); font-weight: 900; margin-top: 4px; text-shadow: 0 3px 0 rgba(0,0,0,.4); }
+.ku-sub { font-size: clamp(14px,3vw,20px); font-weight: 700; color: #e7dcff; margin-top: 6px; }
+.ku-close { margin-top: 16px; background:#34c759; box-shadow:0 7px 0 #1f8c3c, 0 10px 22px rgba(0,0,0,.4); }
 </style>
 </head>
 <body>
@@ -1974,6 +2021,8 @@ html, body {
     <button class="big-btn shop-open" id="shopBtn">💎 ジュエルショップ</button>
     <button class="big-btn zukan-open" id="zukanBtn">📖 おたから図鑑</button>
     <button class="secret-open" id="secretBtn">🔑 ひみつのあいことば</button>
+    <!-- 隠しコマンド：九九モードの「ひみつの呪文」 -->
+    <button class="kuku-gear" id="kukuGearBtn" aria-label="ひみつの呪文">⚙️</button>
   </section>
 
   <!-- ============ おたから図鑑（モーダル） ============ -->
@@ -2017,6 +2066,40 @@ html, body {
       </div>
       <div class="review-list" id="reviewList"></div>
       <button class="big-btn modal-close" id="reviewCloseBtn">とじる</button>
+    </div>
+  </div>
+
+  <!-- ============ 九九：ひみつの呪文（モーダル） ============ -->
+  <div class="modal" id="kukuModal">
+    <div class="modal-box secret-box">
+      <h2 class="modal-title">⚙️ ひみつの呪文（九九）</h2>
+      <p class="secret-lead">先生から おしえてもらった「九九のじゅもん」を いれると、その段が つかえるようになるよ！</p>
+      <input class="secret-input" id="kukuInput" type="text" inputmode="text" autocomplete="off" placeholder="じゅもんを いれてね">
+      <p class="secret-msg" id="kukuMsg"></p>
+      <div class="kuku-stages" id="kukuStages"></div>
+      <div class="secret-actions">
+        <button class="big-btn secret-go" id="kukuGoBtn">となえる！</button>
+        <button class="big-btn modal-close" id="kukuCloseBtn">とじる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ プレイ前：出題ジャンル選択（ひっ算 / かけ算） ============ -->
+  <div class="modal" id="subjectModal">
+    <div class="modal-box">
+      <h2 class="modal-title">📚 なにに ちょうせんする？</h2>
+      <div class="mode-list">
+        <button class="mode-card" data-subject="subtraction" id="subjSubBtn">
+          <span class="mode-emoji">➖</span>
+          <span class="mode-name">ひっ算（たし算・ひき算）</span>
+          <span class="mode-desc">くりあがり・くりさがりの ひっ算で あそぶぞ！</span>
+        </button>
+        <button class="mode-card" data-subject="multiply" id="subjMulBtn">
+          <span class="mode-emoji">✖️</span>
+          <span class="mode-name">かけ算（九九）</span>
+          <span class="mode-desc" id="subjMulDesc">かいほうした 段の 九九が でるぞ！</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2283,6 +2366,18 @@ let inputMode = 'choice';
 let jewelMultiplier = 1.0;        // 報酬倍率（しっかり=1.0 / えらんで=0.33）
 let typedValue = '';              // しっかりモードで入力中の数字
 
+/* 出題の種類：'subtraction'（ひっ算） / 'multiply'（かけ算＝九九） */
+let gameSubject = 'subtraction';
+// 九九の合言葉 → 解放される段（カタカナ・送り違いも吸収）
+const KUKU_SPELLS = {
+  'くくのいち':1, 'くくのに':2, 'くくのさん':3,
+  'くくのよん':4, 'くくのし':4,
+  'くくのご':5, 'くくのろく':6,
+  'くくのなな':7, 'くくのしち':7,
+  'くくのはち':8,
+  'くくのきゅう':9, 'くくのく':9,
+};
+
 /* 宝石コレクション */
 const GEMS = [
   { key:'ruby',     color:'#ff4d6d' },
@@ -2334,7 +2429,7 @@ const CAT_INFO = [
 ];
 
 function loadSave() {
-  const def = { jewels:0, owned:[], equipped:{ parts:null, accessory:null }, items:{}, seen:[], themes:[], theme:null, consecutiveShieldPerfects:0, acquired:{}, inputMode:'choice' };
+  const def = { jewels:0, owned:[], equipped:{ parts:null, accessory:null }, items:{}, seen:[], themes:[], theme:null, consecutiveShieldPerfects:0, acquired:{}, inputMode:'choice', unlockedKukuStages:[] };
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
     return {
@@ -2348,6 +2443,7 @@ function loadSave() {
       consecutiveShieldPerfects: s.consecutiveShieldPerfects || 0,      // シールド装備パーフェクト連続回数（隠し解放用）
       acquired: (s.acquired && typeof s.acquired === 'object') ? s.acquired : {},  // 図鑑：アイテム入手日 {id:timestamp}
       inputMode: (s.inputMode === 'type' || s.inputMode === 'choice') ? s.inputMode : 'choice',  // 入力モードの記憶
+      unlockedKukuStages: Array.isArray(s.unlockedKukuStages) ? s.unlockedKukuStages : [],       // 合言葉で解放した九九の段
     };
   } catch (e) { return def; }
 }
@@ -2420,6 +2516,71 @@ function submitSecret() {
   document.getElementById('secretInput').value = '';
   renderSecretThemes();
   if (typeof playFanfare === 'function' && !already) { initAudio(); playFanfare(); }
+}
+
+/* ===========================================================
+   九九モード：ひみつの呪文で「段」を解放
+   =========================================================== */
+function openKukuModal() {
+  document.getElementById('kukuInput').value = '';
+  const msg = document.getElementById('kukuMsg'); msg.textContent = ''; msg.className = 'secret-msg';
+  renderKukuStages();
+  document.getElementById('kukuModal').classList.add('show');
+  setTimeout(() => document.getElementById('kukuInput').focus(), 50);
+}
+function closeKukuModal() { document.getElementById('kukuModal').classList.remove('show'); }
+function renderKukuStages() {
+  // 1〜9の段のうち、解放ずみを光らせて進捗を見せる
+  const box = document.getElementById('kukuStages');
+  box.innerHTML = '';
+  for (let d = 1; d <= 9; d++) {
+    const chip = document.createElement('span');
+    const got = save.unlockedKukuStages.includes(d);
+    chip.className = 'kuku-chip' + (got ? ' got' : '');
+    chip.textContent = got ? (d + 'の段') : '？';
+    box.appendChild(chip);
+  }
+}
+function submitKuku() {
+  const word = normalizeWord(document.getElementById('kukuInput').value);
+  const msg = document.getElementById('kukuMsg');
+  const dan = KUKU_SPELLS[word];
+  if (!dan) {
+    msg.textContent = 'ちがう じゅもんみたい。もういちど！';
+    msg.className = 'secret-msg ng';
+    return;
+  }
+  const already = save.unlockedKukuStages.includes(dan);
+  if (already) {
+    msg.textContent = `${dan}の段は すでに かいほうずみだよ！`;
+    msg.className = 'secret-msg ok';
+    return;
+  }
+  save.unlockedKukuStages.push(dan);
+  save.unlockedKukuStages.sort((a, b) => a - b);
+  persist();
+  msg.textContent = `🎉 ${dan}の段を かいほう！`;
+  msg.className = 'secret-msg ok';
+  document.getElementById('kukuInput').value = '';
+  renderKukuStages();
+  initAudio(); playFanfare();
+  showKukuUnlock(dan);   // 大きなポップアップ演出
+}
+/* 「○の段が 解放された！」の大ポップアップ */
+function showKukuUnlock(dan) {
+  const pop = document.createElement('div');
+  pop.className = 'kuku-unlock';
+  pop.innerHTML =
+    '<div class="kuku-unlock-box">' +
+    '<div class="ku-burst">✨</div>' +
+    `<div class="ku-dan">${dan}</div>` +
+    `<div class="ku-title">${dan}の段が かいほうされた！</div>` +
+    '<div class="ku-sub">「かけ算モード」で あそべるよ！</div>' +
+    '<button class="big-btn ku-close">やったー！</button>' +
+    '</div>';
+  document.body.appendChild(pop);
+  pop.querySelector('.ku-close').onclick = () => pop.remove();
+  setTimeout(() => { if (pop.parentNode) pop.remove(); }, 6000);
 }
 
 /* このランで使用中のお助けアイテム（プレイ開始時にON、消費される） */
@@ -2901,6 +3062,9 @@ function showRocks() {
     10問目   : 2桁 − 2桁、繰り下がり あり（ラスボス）
    =========================================================== */
 function makeProblem(stage) {
+  // かけ算（九九）モード：解放ずみの段からランダムに出題（2年生の学習範囲）
+  if (gameSubject === 'multiply') return makeMultiplyProblem();
+
   let a, b;
 
   if (stage >= TOTAL_STAGES) {
@@ -2935,7 +3099,33 @@ function makeProblem(stage) {
   const leftVal  = correctSide === 'left'  ? answer : dummy;
   const rightVal = correctSide === 'right' ? answer : dummy;
 
-  return { a, b, answer, leftVal, rightVal, correctSide };
+  return { a, b, answer, op: '−', leftVal, rightVal, correctSide };
+}
+
+/* かけ算（九九）の問題を作る：解放ずみの段からランダムに */
+function makeMultiplyProblem() {
+  const dans = (save.unlockedKukuStages && save.unlockedKukuStages.length) ? save.unlockedKukuStages : [1];
+  const dan  = dans[Math.floor(Math.random() * dans.length)];
+  const mult = randInt(1, 9);
+  const answer = dan * mult;
+  const dummy = makeMultiplyDummy(dan, mult, answer);
+  const correctSide = Math.random() < 0.5 ? 'left' : 'right';
+  const leftVal  = correctSide === 'left'  ? answer : dummy;
+  const rightVal = correctSide === 'right' ? answer : dummy;
+  return { a: dan, b: mult, answer, op: '×', leftVal, rightVal, correctSide };
+}
+/* 九九でありがちな おてつき（同じ段の となりの答え 等） */
+function makeMultiplyDummy(dan, mult, answer) {
+  const cand = new Set();
+  if (mult < 9) cand.add(dan * (mult + 1));   // かける数を1つ多く
+  if (mult > 1) cand.add(dan * (mult - 1));   // かける数を1つ少なく
+  cand.add(answer + dan);                      // 1つ多い（同じ）
+  if (answer - dan > 0) cand.add(answer - dan);
+  cand.add((dan + 1) * mult);                  // 段を1つ間違える
+  if (dan > 1) cand.add((dan - 1) * mult);
+  cand.delete(answer);
+  const arr = [...cand].filter(v => v > 0);
+  return arr.length ? arr[Math.floor(Math.random() * arr.length)] : answer + 1;
 }
 
 /* 小2が陥りやすいミスを意図的にダミーにする */
@@ -3069,7 +3259,7 @@ function nextProblem() {
   qStartAt = performance.now();
 
   elStageNum.textContent = stage;
-  elQuestion.textContent = `${current.a} - ${current.b} = ?`;
+  elQuestion.textContent = `${current.a} ${current.op || '−'} ${current.b} = ?`;
   if (!bossRockActive) {
     setTier(stage); // 背景の禍々しさを更新
     // 10問目だけラスボス登場、それ以外は退場
@@ -3100,8 +3290,8 @@ function nextProblem() {
 /* ふりかえり用：間違えた問題を記録（重複は登録しない） */
 function recordWrong() {
   if (!current) return;
-  const exists = wrongList.some(w => w.a === current.a && w.b === current.b);
-  if (!exists) wrongList.push({ a: current.a, b: current.b, answer: current.answer });
+  const exists = wrongList.some(w => w.a === current.a && w.b === current.b && w.op === (current.op || '−'));
+  if (!exists) wrongList.push({ a: current.a, b: current.b, answer: current.answer, op: current.op || '−' });
 }
 
 /* ===========================================================
@@ -3275,7 +3465,7 @@ function gameOver(reason) {
     document.getElementById('overLabel').textContent =
       (reason === 'timeup') ? 'じかんぎれ！ せいかいは' : 'せいかいは';
     document.getElementById('overCorrect').textContent =
-      `${current.a} − ${current.b} = ${current.answer}`;
+      `${current.a} ${current.op || '−'} ${current.b} = ${current.answer}`;
     showScreen('over');
   }, 2150); // 岩の急拡大(0.43s) + shake(0.5s) + fadeBlack(1.2s)
 }
@@ -3593,7 +3783,7 @@ function openReview() {
       row.className = 'review-item';
       row.innerHTML =
         `<span class="review-num">${i + 1}</span>` +
-        `<span class="review-eq">${w.a} − ${w.b} = <span class="ans">${w.answer}</span></span>`;
+        `<span class="review-eq">${w.a} ${w.op || '−'} ${w.b} = <span class="ans">${w.answer}</span></span>`;
       list.appendChild(row);
     });
   }
@@ -3638,6 +3828,20 @@ function applyInputModeUI() {
 let itemArmSel = {};
 function beginGame() {
   initAudio();
+  // 九九が1つでも解放されていれば、まず「ひっ算 / かけ算」を選ぶ
+  if (save.unlockedKukuStages.length > 0) openSubjectModal();
+  else { gameSubject = 'subtraction'; openModeModal(); }
+}
+/* 出題ジャンル選択（ひっ算 / かけ算） */
+function openSubjectModal() {
+  const dans = save.unlockedKukuStages.slice().sort((a, b) => a - b);
+  document.getElementById('subjMulDesc').textContent =
+    dans.length ? `かいほうした ${dans.join('・')}の段の 九九が でるぞ！` : 'まだ 段が ないよ';
+  document.getElementById('subjectModal').classList.add('show');
+}
+function setSubject(subject) {
+  gameSubject = (subject === 'multiply') ? 'multiply' : 'subtraction';
+  document.getElementById('subjectModal').classList.remove('show');
   openModeModal();
 }
 /* 入力モード選択モーダル */
@@ -3715,6 +3919,14 @@ document.getElementById('zoneRight').addEventListener('click', () => choose('rig
 // 入力モード選択
 document.getElementById('modeTypeBtn').addEventListener('click', () => setInputMode('type'));
 document.getElementById('modeChoiceBtn').addEventListener('click', () => setInputMode('choice'));
+// 出題ジャンル選択（ひっ算 / かけ算）
+document.getElementById('subjSubBtn').addEventListener('click', () => setSubject('subtraction'));
+document.getElementById('subjMulBtn').addEventListener('click', () => setSubject('multiply'));
+// 九九のひみつの呪文
+document.getElementById('kukuGearBtn').addEventListener('click', openKukuModal);
+document.getElementById('kukuGoBtn').addEventListener('click', submitKuku);
+document.getElementById('kukuCloseBtn').addEventListener('click', closeKukuModal);
+document.getElementById('kukuInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitKuku(); });
 // ミニテンキー
 document.querySelectorAll('.kp-key[data-d]').forEach(b => b.addEventListener('click', () => typeDigit(b.dataset.d)));
 document.getElementById('kpDel').addEventListener('click', delDigit);
