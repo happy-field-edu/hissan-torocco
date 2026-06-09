@@ -1831,6 +1831,68 @@ html, body {
 }
 .unlock-sub { font-size: clamp(13px,2.8vw,18px); color: #e7dcff; font-weight: 700; }
 .unlock-close { margin-top: 14px; background:#34c759; box-shadow:0 7px 0 #1f8c3c, 0 10px 22px rgba(0,0,0,.4); pointer-events: auto; }
+
+/* ===========================================================
+   巨大ボス岩バトル
+   =========================================================== */
+#playScreen.boss-rock-on .prompt-go { display: none; }   /* 「どっちにすすむ？」は隠す */
+.boss-rock { position: absolute; inset: 0; pointer-events: none; }
+.br-aura {
+  position: absolute; inset: 0; z-index: 4;
+  background: radial-gradient(58% 42% at 50% 22%, rgba(180,80,255,.55), rgba(120,40,200,.22) 55%, rgba(60,20,90,0) 75%);
+  animation: brAura 1.6s ease-in-out infinite;
+}
+@keyframes brAura { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
+.br-rock {
+  position: absolute; left: 50%; top: 2%; width: 46cqw; height: auto; z-index: 4;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 2.4cqw rgba(180,90,255,.9)) drop-shadow(0 1cqw 1cqw rgba(0,0,0,.5));
+  animation: brRockIn .5s cubic-bezier(.2,1.3,.4,1) both, brRockBob 2.2s ease-in-out .5s infinite;
+}
+@keyframes brRockIn { 0% { transform: translateX(-50%) scale(.3); opacity: 0; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+@keyframes brRockBob { 0%,100% { margin-top: 0; } 50% { margin-top: -1cqw; } }
+.boss-rock.defeated .br-rock { animation: brRockOut .5s ease-in forwards; }
+@keyframes brRockOut { to { transform: translateX(-50%) scale(1.5); opacity: 0; filter: brightness(3); } }
+.br-crystals span {
+  position: absolute; z-index: 4; font-size: 4cqw;
+  filter: drop-shadow(0 0 1cqw rgba(160,220,255,.9));
+  animation: brCrystal 1.8s ease-in-out infinite;
+}
+@keyframes brCrystal { 0%,100% { transform: translateY(0) scale(1); opacity: .8; } 50% { transform: translateY(-1cqw) scale(1.15); opacity: 1; } }
+/* 連続正解ゲージ（3つのピップ） */
+.br-pips { position: absolute; left: 50%; top: 39%; transform: translateX(-50%); z-index: 8; display: flex; gap: 2cqw; }
+.br-pips span {
+  width: 3.4cqw; height: 3.4cqw; border-radius: 50%;
+  background: rgba(255,255,255,.18); border: .4cqw solid #7dff9b; box-shadow: 0 0 1cqw rgba(125,255,155,.4);
+  transition: transform .2s;
+}
+.br-pips span.hit { background: #7dff9b; box-shadow: 0 0 2.4cqw #7dff9b; transform: scale(1.2); }
+/* 残り時間 */
+.br-timer { position: absolute; left: 50%; top: 47%; transform: translate(-50%,-50%); z-index: 8; display: flex; align-items: center; gap: 1cqw; }
+.br-clock { font-size: 6cqw; filter: drop-shadow(0 0 1cqw rgba(180,80,255,.8)); }
+.br-num {
+  font-size: 9cqw; font-weight: 900; color: #fff; line-height: 1;
+  -webkit-text-stroke: .5cqw #8a2be2; text-shadow: 0 0 2cqw rgba(180,80,255,.9);
+  font-variant-numeric: tabular-nums;
+}
+.br-bar-wrap {
+  position: absolute; left: 18%; right: 18%; top: 55%; height: 2.6cqw; z-index: 8;
+  background: rgba(0,0,0,.45); border: .3cqw solid rgba(180,80,255,.75); border-radius: 2cqw; overflow: hidden;
+}
+.br-bar { display: block; height: 100%; width: 100%; background: linear-gradient(90deg,#c77dff,#7d3cff); transition: width .12s linear; }
+.boss-rock.danger .br-num { color: #ff6b6b; -webkit-text-stroke: .5cqw #a8001f; animation: brBlink .4s steps(1) infinite; }
+.boss-rock.danger .br-bar { background: linear-gradient(90deg,#ff8a8a,#ff2a4d); }
+.boss-rock.danger .br-aura { background: radial-gradient(58% 42% at 50% 22%, rgba(255,70,90,.5), rgba(160,30,60,.22) 55%, rgba(80,10,30,0) 75%); }
+@keyframes brBlink { 50% { opacity: .35; } }
+/* 「3問れんぞく せいかいで げきは！」バナー */
+.br-banner {
+  position: absolute; left: 50%; top: 62%; transform: translateX(-50%); z-index: 8; white-space: nowrap;
+  font-size: 4.4cqw; font-weight: 900; color: #fff; -webkit-text-stroke: .35cqw #1f7a3d;
+  background: linear-gradient(180deg,#46d36a,#2a9c4f); padding: 1cqw 4cqw; border-radius: 2cqw;
+  border: .4cqw solid #d9ffe2; box-shadow: 0 .6cqw 0 #1f7a3d, 0 0 3cqw rgba(80,255,130,.6);
+  animation: brBannerPulse 1.2s ease-in-out infinite;
+}
+@keyframes brBannerPulse { 0%,100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.04); } }
 </style>
 </head>
 <body>
@@ -2105,6 +2167,16 @@ let dangerId = null;    // 残り時間わずかの警告タイマー
 /* タイム計測：各問の「出題〜解答」にかかった時間を裏で合計する */
 let totalTimeMs = 0;    // クリアまでの合計タイム（ミリ秒）
 let qStartAt = 0;       // 現在の問題が表示された時刻
+
+/* 巨大ボス岩バトル（ランダムイベント） */
+const BOSS_ROCK_MS     = 30000;  // 制限時間30秒
+const BOSS_ROCK_HITS   = 3;      // 3問連続正解で撃破
+const BOSS_ROCK_CHANCE = 0.18;   // 正解ごとの出現確率
+let bossRockActive = false;
+let bossRockHits   = 0;
+let bossRockEndId  = null;        // 30秒タイムアウト
+let bossRockTickId = null;        // 表示更新タイマー
+let bossRockDeadline = 0;
 
 /* 宝石コレクション */
 const GEMS = [
@@ -2884,16 +2956,19 @@ function clearTimers() {
    問題の表示
    =========================================================== */
 function nextProblem() {
+  // ボス岩バトル中も「既存の2年生向けロジック」をそのまま使う（学年を超えた問題は出さない）
   current = makeProblem(stage);
   locked = false;
+  qStartAt = performance.now();
 
   elStageNum.textContent = stage;
   elQuestion.textContent = `${current.a} - ${current.b} = ?`;
-  setTier(stage); // 背景の禍々しさを更新
-
-  // 10問目だけラスボス登場、それ以外は退場
-  if (stage >= TOTAL_STAGES) startBoss();
-  else stopBoss();
+  if (!bossRockActive) {
+    setTier(stage); // 背景の禍々しさを更新
+    // 10問目だけラスボス登場、それ以外は退場
+    if (stage >= TOTAL_STAGES) startBoss();
+    else stopBoss();
+  }
 
   // 看板を作り直す（approachアニメをやり直すため）
   elChoices.innerHTML = '';
@@ -2906,7 +2981,7 @@ function nextProblem() {
   elChoices.appendChild(left);
   elChoices.appendChild(right);
 
-  startTimer(); // 制限時間スタート
+  if (!bossRockActive) startTimer(); // 制限時間（10秒）スタート。ボス岩中は30秒の専用タイマーが支配
 }
 
 /* ふりかえり用：間違えた問題を記録（重複は登録しない） */
@@ -2926,7 +3001,19 @@ function choose(side) {
   pullLever(side);   // レバーをガチャン！と引く
 
   if (side === current.correctSide) {
-    // --- 正解 ---
+    // ===== 正解 =====
+    if (bossRockActive) {
+      // --- ボス岩バトル中：連続正解をカウント ---
+      blastObstacle();
+      if (save.owned.includes('sword_special')) swordSlash();
+      elFlash.classList.add('show');
+      setTimeout(() => elFlash.classList.remove('show'), 450);
+      bossRockHits++;
+      updateBossRockPips();
+      if (bossRockHits >= BOSS_ROCK_HITS) defeatBossRock();   // 撃破！
+      else setTimeout(nextProblem, 350);
+      return;
+    }
     totalTimeMs += performance.now() - qStartAt; // この問にかかった時間を合計に加える
     score++;
     elPlay.style.setProperty('--combo', Math.min(score, 10)); // 速度計の針＆蒸気を強める
@@ -2941,18 +3028,25 @@ function choose(side) {
       // 10問すべてクリア！ ボスを撃破してからクリア画面へ
       defeatBoss();
       setTimeout(winGame, 1200);
+    } else if (stage >= 2 && stage <= 8 && !feverActive && Math.random() < BOSS_ROCK_CHANCE) {
+      // 確率で「巨大ボス岩」が出現（ステージは進めず、撃破後に進める）
+      setTimeout(startBossRock, 500);
     } else {
       stage++;
       setTimeout(nextProblem, 350); // シームレスに次の問題へ
     }
   } else if (armedShield) {
-    // --- ふたばシールドでミスを1回無効化（岩の衝突をインターセプト）---
+    // ===== ふたばシールドでミスを1回無効化 =====
     recordWrong();           // ふりかえり用に間違えた問題を記録
     armedShield = false;     // 使用不可に
     shieldUsed  = true;      // 終了時に1個消費＆アイコンをグレーアウト
     updateActiveItems();
     showShieldBlock();
-    if (stage >= TOTAL_STAGES) {
+    if (bossRockActive) {
+      bossRockHits = 0;      // 連続が途切れる（でもゲームは続行）
+      updateBossRockPips();
+      setTimeout(nextProblem, 700);
+    } else if (stage >= TOTAL_STAGES) {
       defeatBoss();
       setTimeout(winGame, 1200);
     } else {
@@ -2960,8 +3054,9 @@ function choose(side) {
       setTimeout(nextProblem, 700); // 守られて次へ
     }
   } else {
-    // --- 不正解：落下＆暗転 → ゲームオーバー ---
+    // ===== 不正解：落下＆暗転 → ゲームオーバー =====
     recordWrong();           // ふりかえり用に間違えた問題を記録
+    if (bossRockActive) endBossRock();
     gameOver('wrong');
   }
 }
@@ -3014,6 +3109,7 @@ function gameOver(reason) {
   bossAttackId = null;
   elTimerBar.style.transition = 'none'; // タイマーバーを止める
   endFever();
+  endBossRock();                             // ボス岩演出を片付ける
   if (reason === 'timeup') recordWrong();    // 時間切れも「まちがえた問題」として記録
   renderReview();                            // ふりかえりUIを更新
   showRocks();                 // 岩が手前に急拡大→激突（シェイク＋土煙はインパクト時に発動）
@@ -3047,8 +3143,8 @@ function formatTime(ms) {
    宝石コレクション
    =========================================================== */
 /* 正解時：線路の宝石が1つ飛んできてカウンターに集まる */
-function collectGem() {
-  const rainbow = feverActive;   // フィーバー中は虹色ダイヤモンドだけが落ちる
+function collectGem(forceRainbow) {
+  const rainbow = forceRainbow || feverActive;   // フィーバー中＆ボス撃破時は虹色ダイヤモンド
   const el = document.createElement('div');
   el.className = rainbow ? 'gem-diamond fly-gem' : 'gem fly-gem';
   if (!rainbow) { const gem = GEMS[Math.floor(Math.random() * GEMS.length)]; el.style.setProperty('--gc', gem.color); el._gem = gem; }
@@ -3143,10 +3239,115 @@ function endFever() {
   elPlay.classList.remove('fever');
 }
 
+/* ===========================================================
+   巨大ボス岩バトル
+   ・30秒以内に「既存の2年生向け筆算」を3問連続正解で撃破
+   ・撃破で虹色ダイヤ（通常の10倍）が確定ドロップ
+   ・時間切れ／不正解はゲームオーバー
+   =========================================================== */
+function startBossRock() {
+  if (bossRockActive) return;
+  bossRockActive = true;
+  bossRockHits = 0;
+  elPlay.classList.add('boss-rock-on');
+  buildBossRockOverlay();
+  updateBossRockPips();
+  initAudio(); playBoom(true);          // ズシン！と登場
+  bossRockDeadline = performance.now() + BOSS_ROCK_MS;
+  bossRockTick();                        // 残り時間の表示を回す
+  clearTimeout(bossRockEndId);
+  bossRockEndId = setTimeout(() => {     // 時間切れ → ゲームオーバー
+    if (!bossRockActive) return;
+    locked = true;
+    recordWrong();
+    endBossRock();
+    gameOver('timeup');
+  }, BOSS_ROCK_MS);
+  setTimeout(nextProblem, 700);          // 最初の問題を出題（ボス用：10秒タイマーなし）
+}
+function buildBossRockOverlay() {
+  const stage = document.querySelector('.play-stage');
+  if (!stage) return;
+  const old = document.getElementById('bossRock'); if (old) old.remove();
+  const ov = document.createElement('div');
+  ov.className = 'boss-rock'; ov.id = 'bossRock';
+  let crystals = '';
+  const cpos = [[18,18],[78,14],[30,40],[70,42],[50,8],[12,34],[86,30]];
+  cpos.forEach(([x, y], i) => { crystals += `<span class="br-crystal" style="left:${x}%;top:${y}%;animation-delay:${-i * 0.4}s">💎</span>`; });
+  ov.innerHTML =
+    '<div class="br-aura"></div>' +
+    '<img class="br-rock" src="rock.png" onerror="this.style.display=\'none\'">' +
+    `<div class="br-crystals">${crystals}</div>` +
+    '<div class="br-pips" id="brPips"><span></span><span></span><span></span></div>' +
+    '<div class="br-timer"><span class="br-clock">⏱️</span><span class="br-num" id="brTime">0:30</span></div>' +
+    '<div class="br-bar-wrap"><i class="br-bar" id="brBar"></i></div>' +
+    '<div class="br-banner">3問れんぞく せいかいで げきは！</div>';
+  stage.appendChild(ov);
+}
+function bossRockTick() {
+  clearInterval(bossRockTickId);
+  const update = () => {
+    const remain = Math.max(0, bossRockDeadline - performance.now());
+    const sec = Math.ceil(remain / 1000);
+    const t = document.getElementById('brTime');
+    if (t) t.textContent = '0:' + String(sec).padStart(2, '0');
+    const bar = document.getElementById('brBar');
+    if (bar) bar.style.width = (remain / BOSS_ROCK_MS * 100) + '%';
+    const ov = document.getElementById('bossRock');
+    if (ov) ov.classList.toggle('danger', remain <= 6000);
+  };
+  update();
+  bossRockTickId = setInterval(update, 100);
+}
+function updateBossRockPips() {
+  const pips = document.getElementById('brPips');
+  if (!pips) return;
+  [...pips.children].forEach((p, i) => p.classList.toggle('hit', i < bossRockHits));
+}
+function defeatBossRock() {
+  clearTimeout(bossRockEndId); bossRockEndId = null;
+  clearInterval(bossRockTickId); bossRockTickId = null;
+  bossRockActive = false;
+  const ov = document.getElementById('bossRock');
+  if (ov) ov.classList.add('defeated');
+  // 大爆発＋白フラッシュ
+  blastObstacle(); playBoom(true);
+  elFlash.classList.add('show'); setTimeout(() => elFlash.classList.remove('show'), 600);
+  // 撃破バナー
+  const stage = document.querySelector('.play-stage');
+  if (stage) {
+    const b = document.createElement('div'); b.className = 'fever-banner'; b.textContent = '💥 ボス岩 げきは！';
+    stage.appendChild(b); setTimeout(() => b.remove(), 1800);
+  }
+  playFanfare();
+  // 虹色ダイヤモンドを確定ドロップ（通常の10倍＝100ジュエル）
+  setTimeout(() => collectGem(true), 450);
+  // 片付けて次の問題へ進む
+  setTimeout(() => {
+    if (ov) ov.remove();
+    elPlay.classList.remove('boss-rock-on');
+    stage_advance_after_boss();
+  }, 1700);
+}
+function stage_advance_after_boss() {
+  // ボスはステージ2〜8で出現するので、ここで次の問題へ進める
+  stage++;
+  if (stage > TOTAL_STAGES) winGame();
+  else nextProblem();
+}
+function endBossRock() {
+  bossRockActive = false;
+  clearTimeout(bossRockEndId); bossRockEndId = null;
+  clearInterval(bossRockTickId); bossRockTickId = null;
+  elPlay.classList.remove('boss-rock-on');
+  const ov = document.getElementById('bossRock'); if (ov) ov.remove();
+}
+
 /* 全問クリア */
 function winGame() {
   clearTimers();
   endFever();
+  endBossRock();
   stopBoss();
   awardJewels();   // 集めた宝石をジュエルに換金（2倍チケット適用）
   consumeUsedItems();                        // 使ったアイテムを所持数から減らす
@@ -3260,6 +3461,7 @@ function startGame() {
   elPlay.style.setProperty('--combo', 0); // コンボ演出リセット
   gemCounts = {}; gemTotal = 0; rainbowCount = 0;  // 宝石コレクションをリセット
   endFever();                       // フィーバー状態をリセット
+  endBossRock(); bossRockHits = 0;  // ボス岩状態をリセット
   document.getElementById('gemCount').textContent = 0;
   updateJewelUI();                  // おさいふ残高を表示
   applyCosmetics();                 // 装備中のカスタマイズを反映
