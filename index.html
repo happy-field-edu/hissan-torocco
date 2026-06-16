@@ -3254,9 +3254,9 @@ function makeProblem(stage) {
   let a, b;
 
   if (stage >= TOTAL_STAGES) {
-    // --- ラスボス：2桁 − 2桁（繰り下がりあり） ---
+    // --- ラスボス：最大「30 − いくつか」（2桁−2桁・繰り下がりあり） ---
     for (let t = 0; t < 300; t++) {
-      a = randInt(21, 99);
+      a = randInt(21, 30);          // 引かれる数は最大30まで
       b = randInt(11, a - 1);
       if ((a % 10) < (b % 10)) break; // 一の位で繰り下がりが発生する組み合わせ
     }
