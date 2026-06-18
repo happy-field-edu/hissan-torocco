@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex">
+<title>ひきざんトロッコ｜データ初期化（先生用）</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+    background: linear-gradient(180deg, #2d1b4d, #1a1030); color: #fff; padding: 24px;
+  }
+  .card {
+    width: min(100%, 520px); background: rgba(255,255,255,.06);
+    border: 3px solid #ffd700; border-radius: 22px; padding: 26px 22px; text-align: center;
+    box-shadow: 0 16px 50px rgba(0,0,0,.6);
+  }
+  h1 { font-size: clamp(20px,5vw,28px); margin: 0 0 4px; color: #ffe14d; }
+  .sub { color: #cfe8ff; font-weight: 700; font-size: clamp(13px,3vw,16px); margin-bottom: 18px; }
+  .note {
+    text-align: left; background: rgba(0,0,0,.25); border: 2px dashed rgba(255,255,255,.4);
+    border-radius: 14px; padding: 14px 16px; font-size: clamp(13px,2.8vw,16px); line-height: 1.7; margin-bottom: 20px;
+  }
+  .note b { color: #ffd24d; }
+  .warn { color: #ff9aa6; }
+  button {
+    font-family: inherit; font-weight: 900; color: #fff; border: none; border-radius: 16px;
+    cursor: pointer; width: 100%; font-size: clamp(17px,4vw,22px); padding: 16px;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .reset { background: linear-gradient(180deg,#ff7a8a,#e8455f); box-shadow: 0 7px 0 #a8273c; margin-bottom: 12px; }
+  .reset:active { transform: translateY(4px); box-shadow: 0 2px 0 #a8273c; }
+  .back { background: linear-gradient(180deg,#52d96f,#2a9c4f); box-shadow: 0 7px 0 #1f7a3d; text-decoration: none; display: block; color: #fff; }
+  .back:active { transform: translateY(4px); box-shadow: 0 2px 0 #1f7a3d; }
+  .result { font-weight: 900; font-size: clamp(16px,3.6vw,20px); min-height: 1.4em; margin: 6px 0 16px; }
+  .result.ok { color: #7dff9b; }
+  .cur { color: #9be7ff; font-size: clamp(12px,2.6vw,15px); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🧹 データ初期化（先生用）</h1>
+    <div class="sub">ひきざんトロッコ</div>
+
+    <div class="note">
+      このボタンは <b>「いま開いている、この端末」</b> のセーブデータ（ジュエル・図鑑・解放した九九や背景）だけを消します。<br><br>
+      セーブは各端末のブラウザの中だけに保存されているので、<b>ほかの子の端末のデータには いっさい影響しません。</b><br><br>
+      <span class="warn">⚠️ 子どもが使っている端末では押さないでください（その端末の進みが消えます）。</span>
+    </div>
+
+    <div class="cur" id="cur"></div>
+    <div class="result" id="result"></div>
+
+    <button class="reset" id="resetBtn">この端末のデータを初期化する</button>
+    <a class="back" href="./index.html">ゲームにもどる</a>
+  </div>
+
+<script>
+  const SAVE_KEY = 'trocco_save_v1';
+  function refresh() {
+    const raw = localStorage.getItem(SAVE_KEY);
+    const cur = document.getElementById('cur');
+    if (!raw) { cur.textContent = 'いまの状態：セーブデータなし（初期状態）'; return; }
+    try {
+      const s = JSON.parse(raw);
+      const kuku = (s.unlockedKukuStages || []).join('・') || 'なし';
+      cur.textContent = `いまの状態：ジュエル ${s.jewels||0} ／ 解放した九九の段：${kuku}`;
+    } catch (e) { cur.textContent = 'いまの状態：セーブデータあり'; }
+  }
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (!confirm('この端末のデータを初期化します。よろしいですか？\n（ほかの端末には影響しません）')) return;
+    localStorage.removeItem(SAVE_KEY);
+    const r = document.getElementById('result');
+    r.textContent = '✅ この端末のデータを初期化しました！';
+    r.className = 'result ok';
+    refresh();
+  });
+  refresh();
+</script>
+</body>
+</html>
