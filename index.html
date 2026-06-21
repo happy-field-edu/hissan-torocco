@@ -4227,11 +4227,12 @@ document.getElementById('modeChoiceBtn').addEventListener('click', () => setInpu
 // 出題ジャンル選択（ひっ算 / かけ算）
 document.getElementById('subjSubBtn').addEventListener('click', () => setSubject('subtraction'));
 document.getElementById('subjMulBtn').addEventListener('click', () => setSubject('multiply'));
-// 秘密の合言葉（完全に隠されたトリガー：タイトルロゴを2秒以内に5回タップして出現させる）
+// 秘密の合言葉（隠しトリガー：タイトルロゴを5回タップして出現させる。
+//   話しながらでも押せるよう、間隔1.2秒以内／合計5秒以内とゆるめに判定）
 (function setupSecretTitleTap() {
   const logo = document.querySelector('#titleScreen .cover-img');
   if (!logo) return;
-  const NEED = 5, WINDOW_MS = 2000, RESET_GAP_MS = 500;
+  const NEED = 5, WINDOW_MS = 5000, RESET_GAP_MS = 1200;
   let count = 0, lastTap = 0, firstTap = 0;
   logo.addEventListener('click', () => {
     const now = Date.now();
