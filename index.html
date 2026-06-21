@@ -1719,6 +1719,7 @@ html, body {
 .secret-chip { color:#fff; font-weight:800; font-size:clamp(12px,2.4vw,16px); background:rgba(255,255,255,.16); border:2px solid #ffe14d; border-radius:999px; padding:6px 14px; cursor:pointer; }
 .secret-chip.active { background:#ffe14d; color:#3a2570; }
 .secret-actions { display:flex; gap:12px; justify-content:center; margin-top:14px; }
+.secret-actions .big-btn { white-space:nowrap; font-size:clamp(16px,3.6vw,22px); padding:14px 22px; }
 .secret-go { background:#34c759; box-shadow:0 7px 0 #1f8c3c, 0 10px 22px rgba(0,0,0,.4); margin-top:0; }
 .secret-actions .modal-close { margin-top:0; }
 
@@ -4242,12 +4243,11 @@ document.getElementById('subjMulBtn').addEventListener('click', () => setSubject
     lastTap = now;
     if (count >= NEED && (now - firstTap) <= WINDOW_MS) {
       count = 0;
-      const btn = document.getElementById('secretBtn');
-      if (btn) {
-        btn.style.display = '';
-        initAudio();
-        if (typeof playFanfare === 'function') playFanfare();
-      }
+      // 端末下部の小さなボタンを押させると iPad のツールバーに隠れて押しづらいので、
+      // 5回タップで合言葉モーダルを直接ひらく
+      initAudio();
+      if (typeof playFanfare === 'function') playFanfare();
+      openSecretModal();
     }
   });
 })();
