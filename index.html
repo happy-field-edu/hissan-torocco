@@ -2522,7 +2522,7 @@ let typedValue = '';              // しっかりモードで入力中の数字
 
 /* タイムアタック（1分間で何問解けるか） */
 const TIME_ATTACK_MS = 60000;     // 制限時間60秒
-const TA_PENALTY_MS  = 2000;      // まちがえたときの少しのタイムロス
+const TA_PENALTY_MS  = 5000;      // まちがえたときのタイムロス（適当連打を防ぐため重め）
 let timeAttackMode = false;
 let timeAttackScore = 0;          // 正解数
 let timeAttackDeadline = 0;
@@ -3945,7 +3945,7 @@ function taPenaltyFlash() {
   if (!st) return;
   const f = document.createElement('div');
   f.className = 'ta-penalty';
-  f.textContent = '−2びょう…';
+  f.textContent = '−' + (TA_PENALTY_MS / 1000) + 'びょう…';
   st.appendChild(f);
   setTimeout(() => f.remove(), 700);
 }
@@ -4269,6 +4269,7 @@ document.getElementById('reviewCloseBtn').addEventListener('click', closeReview)
 // キーボード操作：えらんで＝矢印、しっかり＝数字キー＋Enter＋Backspace
 document.addEventListener('keydown', (e) => {
   if (!screens.play.classList.contains('active')) return;
+  if (e.repeat) return;   // キーの「長押し（オートリピート）」での連打を無効化（ズル対策）
   if (inputMode === 'type') {
     if (e.key >= '0' && e.key <= '9') { typeDigit(e.key); e.preventDefault(); }
     else if (e.key === 'Enter')       { submitTyped(); e.preventDefault(); }
