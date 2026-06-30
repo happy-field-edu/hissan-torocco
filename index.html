@@ -2522,7 +2522,7 @@ let typedValue = '';              // しっかりモードで入力中の数字
 
 /* タイムアタック（1分間で何問解けるか） */
 const TIME_ATTACK_MS = 60000;     // 制限時間60秒
-const TA_PENALTY_MS  = 5000;      // まちがえたときのタイムロス（適当連打を防ぐため重め）
+const TA_PENALTY_MS  = 10000;     // まちがえたときのタイムロス（適当連打を防ぐため重め）
 let timeAttackMode = false;
 let timeAttackScore = 0;          // 正解数
 let timeAttackDeadline = 0;
